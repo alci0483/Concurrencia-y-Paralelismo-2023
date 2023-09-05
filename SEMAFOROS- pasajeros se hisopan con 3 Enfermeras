@@ -8,27 +8,29 @@ por parte de la enfermera correspondiente.
 
 ColaPuesto cola[3];                 //cola para cada uno de los tres puestos
 int cantPasajerosPueto[3]=([3] 0);    //cantidad de pasajeros en cada cola
-sem mutex = 1;                      // Semáforo para uso atómico de cola
+sem auxiliar=1;
+sem mutex[3]=([3] 1);                      // Semáforo para uso atómico de cola
 sem solicitud[3]= ([3] 0);              
-sem turno[150]= ([150] 0);                  
-sem terminoHisopado[150] = ([150] 0);     
+sem pasa[150]= ([150] 0);                  
+sem listo[3] = ([3] 0);     
 
 process Pasajero[id: 0..149] {
-    int idEnfermera    
+    int miPuesto;    
 
-    P(mutex)
-    idEnfermera=obtenerMinimaFila(cantPasajerosPuesto);
-    cantPasajerosPuesto[idEnfermera]++;
-    push(cola[idEnfermera]);
-    V(mutex)
+    P(auxiliar)
+    miPuesto=btenerMinimaFila(cantPasajerosPuesto);
+    cantPasajerosPuesto[miPuesto]++;
+    V(auxiliar)
+
+    P(mutex[miPuesto])
+    push(cola[miPuesto],id);
+    V(mutex[miPuesto])
   
-    V(solicitud[idEnfermera]);
+    V(solicitud[miPuesto]);
 
-    P(turno[id]);
-    //le toca hizoparse
-    ...
-    //termino su hizopado
-    v(terminoHisopado[id]);
+    P(pasa[id]);
+    V(listo[miPuesto]);
+    v(pasa[id]);
     
    //se retira
 }
@@ -37,17 +39,20 @@ process Enfermera [id:0..2]{
     int idPasajero;
 
     while(true) {
-      P(solicitud[id]);
+        P(solicitud[id]);
 
-      P(mutex)
-      pop(cola[idEnfermera],idPasajero);
-      V(mutex)
+        P(mutex[id])
+        pop(cola[id],idPasajero);
+        V(mutex)
 
-      V(turno[idPasajero]);
-    
-      Hisopar()
+        V(pasa[idPasajero]);
+        P(listo[id])
+        Hisopar();
+        V(pasa[idPasajero]);
 
-      P(terminoHisopado[idPasajero]);
-    }
+        P(auxiliar)
+        cantPasajerosPuesto[id]--;
+        V(auxiliar)
+    } 
 }
 
