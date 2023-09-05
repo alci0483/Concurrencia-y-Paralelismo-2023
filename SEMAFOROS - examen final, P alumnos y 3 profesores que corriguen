@@ -14,7 +14,6 @@ int corregido[P]=([P] -1);
 
 Process Alumno[id:0..P-1]{
     text examen; 
-    int idProfesor;
     
     P(mutex)
     contador++;   // Incrementar el contador atómicamente
