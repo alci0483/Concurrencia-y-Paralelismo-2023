@@ -1,0 +1,63 @@
+En un examen final hay P alumnos y 3 profesores. Cuando todos los alumnos han llegado comienza el examen. Cada alumno resuelve 
+su examen, lo entrega y espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los 
+exámenes respectando el orden en que los alumnos van entregando. Nota: todos los procesos deben terminar. 
+
+colaExamenesEntregados c ; 
+int contador =0;
+sem barrera=0;
+
+sem mutex =1 ; 
+sem entregas=0;
+sem notif[P]=([P] 0;
+
+int corregido[P]=([P] -1);
+
+Process Alumno[id:0..P-1]{
+    text examen; 
+    int idProfesor;
+    
+    P(mutex)
+    contador++;   // Incrementar el contador atómicamente
+    if (contador == P) {    // Si todos los alumnos  han llegado al examen
+        for i = 1..P -> V(barrera);  // Avisar a todos los alumnos para que comiencen el examen
+    }
+    V(mutex);    // Liberar el uso del contador
+
+    P(barrera); // Esperar el inicio del examen  (todos los alumnos han llegado)
+
+    Resolver(examen);
+    
+    P(mutex)
+    push(C,id,ex);
+    V(mutex);
+    
+    V(entregas);
+        
+    P(notif[id]));
+    
+}
+    
+process Profesor [id:0..2] {
+       text examen;
+       int idAlumno;  
+       bool seguir=true;
+       
+        while (segir) { 
+        
+            P(entregas);
+        
+            P(mutex)
+            pop(C,idAlumno,examen);
+            contador--;
+            V(mutex);
+       
+            corregido[idAlumno]=corregirexamen(examen);
+       
+            V(notif[idAlumno]);
+            
+            P(mutex)
+            if(contador == 0) seguir=false;
+            V(mutex)
+          }
+     }
+}
