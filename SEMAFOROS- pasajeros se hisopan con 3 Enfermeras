@@ -6,10 +6,10 @@ se retira. Nota: suponer que existe una función Hisopar() que simula la atenci�
 por parte de la enfermera correspondiente.
 
 
-ColaPuesto cola[3];    //cola para cada uno de los tres puestos
-int cantPasajerosPueto[3]=([3] 0);
-sem mutex[3] = ([3] 1);                      // Semáforo para uso atómico de cola
-sem solicitud[3]= ([3] 0);                  // Semáforo para evitar pop() en cola vacía
+ColaPuesto cola[3];                 //cola para cada uno de los tres puestos
+int cantPasajerosPueto[3]=([3] 0);    //cantidad de pasajeros en cada cola
+sem mutex = 1;                      // Semáforo para uso atómico de cola
+sem solicitud[3]= ([3] 0);              
 sem turno[150]= ([150] 0);                  
 sem terminoHisopado[150] = ([150] 0);     
 
