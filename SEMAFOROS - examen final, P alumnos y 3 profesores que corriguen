@@ -12,6 +12,9 @@ sem notif[P]=([P] 0;
 
 int corregido[P]=([P] -1);
 
+int reservado=0;
+sem fin=1;
+
 Process Alumno[id:0..P-1]{
     text examen; 
     
@@ -37,26 +40,27 @@ Process Alumno[id:0..P-1]{
 }
     
 process Profesor [id:0..2] {
-       text examen;
-       int idAlumno;  
-       bool seguir=true;
-       
-        while (segir) { 
+    text examen;
+    int idAlumno;  
+    bool seguir=true;
+
+    P(fin)
+    while(reservado < P){
+        reservado++;
+        V(fin)
+
+        P(entregas);
         
-            P(entregas);
-        
-            P(mutex)
-            pop(C,idAlumno,examen);
-            contador--;
-            V(mutex);
+        P(mutex)
+        pop(C,idAlumno,examen);
+        V(mutex);
        
-            corregido[idAlumno]=corregirexamen(examen);
+        corregido[idAlumno]=corregirexamen(examen);
        
-            V(notif[idAlumno]);
-            
-            P(mutex)
-            if(contador == 0) seguir=false;
-            V(mutex)
-          }
-     }
+        V(notif[idAlumno]);
+
+        P(fin);
+    }
+    V(fin)
+       
 }
