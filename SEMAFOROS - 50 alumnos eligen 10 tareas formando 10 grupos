@@ -1,9 +1,85 @@
-8. Suponga que se tiene un curso con 50 alumnos. Cada alumno elije una de las 10 tareas para realizar entre todos. Una vez que todos
+Suponga que se tiene un curso con 50 alumnos. Cada alumno elije una de las 10 tareas para realizar entre todos. Una vez que todos
 los alumnos eligieron su tarea comienzan a realizarla. Cada vez que un alumno termina su tarea le avisa al profesor y se queda 
 esperando el puntaje del grupo. Cuando todos los alumnos que tenían la misma tarea terminaron el profesor les otorga un puntaje 
 que representa el orden en que se terminó esa tarea. Nota: Para elegir la tarea suponga que existe una función elegir que le 
 asigna una tarea a un alumno (esta función asignará 10 tareas diferentes entre 50 alumnos, es decir, que 5 alumnos tendrán la tarea 1,
 otros 5 la tarea 2 y así sucesivamente para las 10 tareas). 
+
+sem mutex=1;
+int cant=0;
+sem comenzar=0;
+Cola C;
+sem Espera=0;
+sem reporte[10]=([10] 0);
+int notas[10];
+
+
+process Alumno[id:0..40]{
+    int miTarea= elegir();
+    text tarea;
+
+    P(mutex)
+    cant++
+    if(cant == 50){ 
+        for i= 0..49 
+            V(comenzar)
+    V(mutex)
+
+    P(comenzar)
+    //...
+    resolverTarea(tarea);
+
+    P(mutex)
+    push(c,tarea,miTarea);
+    V(mutex)
+
+    V(espera)
+
+    P(reporte[miTarea])
+    print(notas[miTarea]);
+}
+
+
+process Profesor{
+    int terminado[10]=([10] 0);
+    text tarea;
+    int numT;
+    int actual=10;
+
+    for i= 0..49 {
+        P(espera)
+
+        P(mutex)
+        push(c,tarea,numT);
+        V(mutex)
+
+        terminado[numT]++;
+
+        if(terminado[numT]== 5){
+            notas[numT]=Actual;
+            actual--;
+            for i=0..4 Vreporte[numT];
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 sem mutex = 1; // Semáforo para garantizar exclusión mutua.
 sem tareaListas = 0; // Este semáforo se utiliza para asegurarse de que todos los alumnos hayan elegido sus tareas antes de comenzar a realizarlas. Inicialmente, todos los alumnos esperarán en este semáforo.
@@ -11,7 +87,7 @@ sem[] tareaElegida = ([10] 0); // Un semáforo para cada tarea.
 int[] contadorTareas = ([10] 0); // Contador para el número de alumnos que eligieron cada tarea.
 int[] contadorTareasTerminadas = ([10] 0); // Contador para el número de alumnos que terminaron cada tarea.
 
-process Alumno[id: 1..50] {
+process Alumno[id:0..49] {
     int tareaAsignada = elegir(); // Función para asignar una tarea a cada alumno.
 
     P(mutex);
