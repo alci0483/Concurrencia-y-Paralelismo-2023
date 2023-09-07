@@ -50,7 +50,7 @@ process Profesor{
         P(espera)
 
         P(mutex)
-        push(c,tarea,numT);
+        pop(c,tarea,numT);
         V(mutex)
 
         terminado[numT]++;
