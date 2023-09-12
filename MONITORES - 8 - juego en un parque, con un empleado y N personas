@@ -1,3 +1,46 @@
 8. En un parque hay un juego para ser usada por N personas de a una a la vez y de acuerdo al orden en que llegan para solicitar su uso. Además, hay un empleado encargado de desinfectar
 el juego durante 10 minutos antes de que una persona lo use. Cada persona al llegar espera hasta que el empleado le avisa que puede usar el juego, lo usa por un tiempo y luego lo
 devuelve. Nota: suponga que la persona tiene una función Usar_juego que simula el uso del juego; y el empleado una función Desinfectar_Juego que simula su trabajo. 
+
+    Monitor Juego {
+      int esperando = 0;
+      Cond solicitud, terminado, espera;
+
+      Procedure Solicitar() {
+        esperando++;
+        signal(solicitud);      // aviso por si empleado está dormido
+        wait(espera);
+      }
+
+      Procedure Liberar() {
+        signal(terminado);      // despertar a empleado para que llame al siguiente
+      }
+
+      Procedure seguir() {
+        // Se queda dormido sólo si no había nadie esperando para imprimir
+        // La primera persona que llegue tendrá que despertarlo para que siga su labor
+
+        if (esperando == 0) wait(solicitud);      // evito busy-waiting
+      }
+       
+
+      Procedure pasar(){
+        esperando--;
+        signal(espera);
+        wait(terminado);                        // sólo 1 persona fotocopia a la vez
+      }
+    }
+
+    Process Persona[id: 0..N-1] {
+      Juego.Solicitar();
+      Jugar();
+      Juego.Liberar();
+    }
+
+    Process Empleado {
+      for i= 0 to N-1 {
+        Juego.seguir();
+        Desinfectar();       // desinfecta por 10 minutos
+        Juego.pasar();
+      }
+    }
