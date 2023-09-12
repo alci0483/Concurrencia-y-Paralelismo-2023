@@ -46,7 +46,7 @@ profesor le da la nota y el alumno se retira. Cuando un profesor está libre lla
       }
 
       
-      Procedure esperarAlumno() { 
+      Procedure esperarAlumno() {
         if(not listo) wait (profesor);
       }
 
