@@ -1,0 +1,59 @@
+5. En un entrenamiento de futbol hay 20 jugadores que forman 4 equipos (cada jugador conoce el equipo al cual pertenece llamando a la función DarEquipo()). Cuando un equipo
+está listo (han llegado los 5 jugadores que lo componen), debe enfrentarse a otro equipo que también esté listo (los dos primeros equipos en juntarse juegan en la cancha 1, y 
+los otros dos equipos juegan en la cancha 2). Una vez que el equipo conoce la cancha en la que juega, sus jugadores se dirigen a ella. Cuando los 10 jugadores del partido llegaron 
+a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos los jugadores del partido se retiran (no es necesario que se esperen para salir).
+
+    Monitor Club {
+      int llegados[4] = ([4] 0);      // cuántos jugadores hay asignados en cada equipo
+      int completos = 0;              // cuántos equipos tienen 5 jugadores
+      int nroCancha[4] = ([4] -1);    // cuál es la cancha que le toca a cada equipo
+      Cond equipo[4];
+
+      Procedure Llegada(nroEq, nroCancha : out int) {
+        nroEq = DarEquipo();
+        llegados[nroEq]++;
+
+        if (llegados[nroEq] < 5) wait(equipo[nroEq]);
+        else {
+            // Soy el jugador que completa el equipo...
+            nroCancha[nroEq] = completos / 2;
+            completos++;
+            signal_all(equipo[nroEq]);      // despertar a todo mi equipo
+        }
+
+        nroCancha = nroCancha[nroEq];       // devolver como salida al completar equipo
+      }
+    }
+
+    Monitor Cancha[id: 0..2] {
+      int llegaron = 0;
+      Cond espera_inicio, espera_fin;
+
+      Procedure Llegada(){
+        llegaron++;
+        if (llegaron == 10) signal(espera_inicio);
+        wait(espera_fin);
+      }
+
+      Procedure EsperaComienzo(){
+        if (llegados < 10) wait(espera_inicio);
+      }
+
+      Procedure Terminar(){
+        signal_all(espera_fin);
+      }
+    }
+
+    Process Jugador[id: 0..19] {
+      int nroEq, nroCancha;
+
+      Club.Llegada(nroEq, nroCancha);
+      Cancha[nroCancha].Llegada();
+      // Retirarse sin esperar al resto...
+    }
+
+    Process Partido[id: 0..1] {
+      Cancha[id].EsperaComienzo();
+      delay(50);
+      Cancha[id].Terminar();   
+    }
