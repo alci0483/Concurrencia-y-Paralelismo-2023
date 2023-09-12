@@ -5,26 +5,33 @@ profesor le da la nota y el alumno se retira. Cuando un profesor está libre lla
     Monitor MesaExamen {
       cola profesoresLibres;    //cola cargada con los ids de los profesores disponibles
       cond esperaAlumno;
-      int esperando = 0;
+      int esperando = 0; 
+      int cantLibres=0;
+      int atendidos=0;
 
       Procedure llegada(idProfesor: out int) { 
-        if (empty(profesoresLibres)) { 
+        if (cantLibres == 0) { 
           esperando ++;
           wait (esperaAlumno);
-        } 
+        } else cantLibres--;
  
         pop(profesoresLibres, idProfesor);
       }
 
       Procedure Próximo(idProfesor: in int) { 
+        atendidos++;
+        a=atendidos;
         push(profesoresLibres, idProfesor);
-        if (esperando > 0 ) { 
-          esperando --;
-          signal (esperaAlumno);
-        } 
-      }  
-    }
 
+        if(atendidos <= 30)){
+            if (esperando > 0 ) { 
+                esperando --;
+                signal (esperaAlumno);
+            } else cantLibres++;
+        }  
+     }
+    }
+    
     Monitor Escritorio[id: 0..2] {
       cond profesor, alumno;
       text resultado;
@@ -59,12 +66,16 @@ profesor le da la nota y el alumno se retira. Cuando un profesor está libre lla
     }
 
     Process Profesor[id: 0..2] { 
-      int resultado;
+      int resultado; atendidos=0;
 
-      while (true) { 
-        MesaExamen.próximo(id);
-        Escritorio.esperarAlumno();
-        resultado=tomarExamenOral();
-        Escritorio[id].enviarResultado(resultado);
+      MesaExamen.próximo(id,atendidos);
+      while (atendidos <= 30) { 
+        Escritorio.esperarAlumno();                    //se podria hacer todo esto dentro  
+        resultado=tomarExamenOral();                   //de un solo procedure dentro del monitor
+        Escritorio[id].enviarResultado(resultado);     //Escritorio ya que es un examen oral(interactivo)
+
+        MesaExamen.próximo(id,atendidos);
       }
     }
+
+
