@@ -1,0 +1,70 @@
+3. En una mesa de exámenes hay 3 profesores que les deben tomar un examen oral a 30 alumnos de acuerdo al orden de llegada. Cada examen es tomado por un único profesor. 
+Cuando un alumno llega, espera a que alguno de los profesores (cualquiera) lo llame y se dirige al escritorio correspondiente a ese profesor, donde le tomará el examen; al terminar el
+profesor le da la nota y el alumno se retira. Cuando un profesor está libre llama al siguiente alumno. Nota: todos los procesos deben terminar su ejecución. 
+
+    Monitor MesaExamen {
+      cola profesoresLibres;    //cola cargada con los ids de los profesores disponibles
+      cond esperaAlumno;
+      int esperando = 0;
+
+      Procedure llegada(idProfesor: out int) { 
+        if (empty(profesoresLibres)) { 
+          esperando ++;
+          wait (esperaAlumno);
+        } 
+ 
+        pop(profesoresLibres, idProfesor);
+      }
+
+      Procedure Próximo(idProfesor: in int) { 
+        push(profesoresLibres, idProfesor);
+        if (esperando > 0 ) { 
+          esperando --;
+          signal (esperaAlumno);
+        } 
+      }  
+    }
+
+    Monitor Escritorio[id: 0..2] {
+      cond profesor, alumno;
+      text resultado;
+      boolean listo = false;
+
+      Procedure atencion(examen: in text; nota: out text) { 
+        listo=true;
+        signal (profesor);
+        wait (alumno);
+        nota = resultado;
+        signal (profesor);
+      }
+
+      
+      Procedure esperarAlumno() { 
+        if(not listo) wait (profesor);
+      }
+
+      Procedure EnviarResultados(R: in text) { 
+        resultado = R;
+        signal (alumno);
+        wait (profesor);
+      }
+    }
+
+    Process Alumno[id: 0..29] { 
+      int idProfesor;
+      int nota;
+
+      MesaExamen.llegada(idProfesor);
+      Escritorio[idProfesor].atencion(examen, nota);
+    }
+
+    Process Profesor[id: 0..2] { 
+      int resultado;
+
+      while (true) { 
+        MesaExamen.próximo(id);
+        Escritorio.esperarAlumno();
+        resultado=tomarExamenOral();
+        Escritorio[id].enviarResultado(resultado);
+      }
+    }
