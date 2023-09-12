@@ -1,67 +1,208 @@
-2. Existen N personas que deben fotocopiar un documento cada una. Resolver cada ítem
-usando monitores:
+2. Existen N personas que deben fotocopiar un documento cada una. Resolver cada ítem usando monitores:
 
-a) Implemente una solución suponiendo que existe una única fotocopiadora compartida
-por todas las personas, y las mismas la deben usar de a una persona a la vez, sin
-importar el orden. Existe una función Fotocopiar() que simula el uso de la fotocopiadora.
-Sólo se deben usar los procesos que representan a las Personas (y los monitores que sean
-necesarios).
+a) Implemente una solución suponiendo que existe una única fotocopiadora compartida por todas las personas, y las mismas la deben usar de a una persona a la vez, sin importar el orden. 
+Existe una función Fotocopiar() que simula el uso de la fotocopiadora. Sólo se deben usar los procesos que representan a las Personas (y los monitores que sean necesarios).
 
-    Monitor Fotocopiadora {
+        Monitor Fotocopiadora {
       
-      Procedure Usar() {
-        Fotocopiar();
-      }
-    }
+            Procedure Usar() {
+                Fotocopiar();
+            }
+        }    
 
-    Process Persona[id: 0..N-1] {    // Utilizar sin importar el orden de llegada
-      Fotocopiadora.Usar();
-    }
+        Process Persona[id: 0..N-1] {    // Utilizar sin importar el orden de llegada
+            Fotocopiadora.Usar();
+        }
+
 
 b) Modifique la solución de (a) para el caso en que se deba respetar el orden de llegada.
 
-    Monitor Fotocopiadora {
-      Cond cola;
-      Bool libre = true;
-      int esperando = 0;
+        Monitor Fotocopiadora {
+            Cond cola;
+            Bool libre = true;
+            int esperando = 0;
 
-      Procedure Solicitar() {
-        // Es necesario consultar por libre = true, sino nadie me podrá despertar
-        if (libre) libre = false; 
-        else { 
-          esperando++; 
-          wait(cola); 
-        } 
-      }
+            Procedure Solicitar() {
+                // Es necesario consultar por libre = true, sino nadie me podrá despertar
+                if (libre) libre = false; 
+                else { 
+                    esperando++; 
+                    wait(cola); 
+                } 
+            }
 
-      Procedure Liberar() {
-        if (esperando > 0) { esperando--; signal(cola); } 
-        else libre = true;
-      }
-    }
+            Procedure Liberar() {
+                if (esperando > 0) { 
+                    esperando--; 
+                    signal(cola); } 
+                else libre = true;
+            }
+        }
 
-    Process Persona[id: 0..N-1] {
-        Fotocopiadora.Solicitar();
-        Fotocopiar();                   // Otras personas pueden solicitar mientras tanto
-        Fotocopiadora.Liberar();
-    }
+        Process Persona[id: 0..N-1] {
+            Fotocopiadora.Solicitar();
+            Fotocopiar();                   // Otras personas pueden solicitar mientras tanto
+            Fotocopiadora.Liberar();
+        }
 
-c) Modifique la solución de (b) para el caso en que se deba dar prioridad de acuerdo a la
-edad de cada persona (cuando la fotocopiadora está libre la debe usar la persona de
+
+c) Modifique la solución de (b) para el caso en que se deba dar prioridad de acuerdo a la edad de cada persona (cuando la fotocopiadora está libre la debe usar la persona de
 mayor edad entre las que estén esperando para usarla).
 
+        Monitor Fotocopiadora {
+            Cond espera[N];         // 1 cola para cada persona (contendrá hasta 1 proceso dormido cada una)
+            Bool libre = true;
+            ColaOrdenada c;         // Priorizada por edad 
+            int siguiente;
+
+            Procedure Solicitar(idP, edad : in int) {
+                if (libre) libre = false;
+                else { 
+                    insertar(c, idP, edad);
+                    wait(espera[idP]);    
+                } 
+            }
+
+            Procedure Liberar() {
+                if (not empty(c)) { 
+                    sacar(c, siguiente);
+                    signal(espera[siguiente]); 
+                } else libre = true;
+            }
+        }
+
+        Process Persona[id: 0..N-1] {
+            int edad = ...;
+
+            Fotocopiadora.Solicitar(id, edad);
+            Fotocopiar();
+            Fotocopiadora.Liberar();
+        }
 
 
-d) Modifique la solución de (a) para el caso en que se deba respetar estrictamente el orden
-dado por el identificador del proceso (la persona X no puede usar la fotocopiadora
-hasta que no haya terminado de usarla la persona X-1).
+d) Modifique la solución de (a) para el caso en que se deba respetar estrictamente el orden dado por el identificador del proceso (la persona X no puede usar 
+la fotocopiadora hasta que no haya terminado de usarla la persona X-1).
+
+        Monitor Fotocopiadora {
+            int siguiente = 0, restantes = N;
+            Cond espera[N];
+
+            Procedure Esperar(idP : in int) {
+                if (not siguiente == idP) {
+                    esperando++;
+                    wait(espera[idP]);
+                }
+            }
+    
+            Procedure Avanzar() {
+                if (restantes > 0) {
+                    siguiente = (siguiente + 1) % N;
+                    signal(espera[siguiente]);
+                }
+            }
+        }
+
+        Process Persona[id: 0..N-1] {
+            Fotocopiadora.Esperar(id);
+            Fotocopiar();
+            Fotocopiadora.Avanzar();
+        }
 
 
+e) Modifique la solución de (b) para el caso en que además haya un Empleado que le indica a cada persona cuando debe usar la fotocopiadora.
 
-e) Modifique la solución de (b) para el caso en que además haya un Empleado que le indica
-a cada persona cuando debe usar la fotocopiadora.
+        Monitor Fotocopiadora {
+            int esperando = 0;
+            Cond solicitud, terminado, espera;
+
+            Procedure Solicitar() {
+                esperando++;
+                signal(solicitud);      // aviso por si empleado está dormido
+                wait(espera);
+            }
+
+            Procedure Liberar() {
+                signal(terminado);      // despertar a empleado para que llame al siguiente
+            }
+
+            Procedure Atender() {
+                // Se queda dormido sólo si no había nadie esperando para imprimir
+                // La primera persona que llegue tendrá que despertarlo para que siga su labor
+
+                if (esperando == 0) wait(solicitud);      // evito busy-waiting
+               
+                esperando--;
+                signal(espera);
+                wait(terminado);                        // sólo 1 persona fotocopia a la vez
+            }
+        }
+
+        Process Persona[id: 0..N-1] {
+            Fotocopiadora.Solicitar();
+            Fotocopiar();
+            Fotocopiadora.Liberar();
+        }
+
+        Process Empleado {
+            for i= 0 to N-1 {
+                Fotocopiadora.Atender();
+            }
+        }
 
 
+f) Modificar la solución (e) para el caso en que sean 10 fotocopiadoras. El empleado le indica a la persona cuando puede usar una fotocopiadora, y cual debe usar.  
 
-f) Modificar la solución (e) para el caso en que sean 10 fotocopiadoras. El empleado le
-indica a la persona cuando puede usar una fotocopiadora, y cual debe usar.  
+        Monitor Fotocopiadora {
+            Cola c;
+            Cond solicitud, liberado, espera;
+            Cola disponibles = ...;         // Fotocopiadoras sin persona asignada (cola ya cargada)
+            int asignada[N] = ([N] -1);     // Fotocopiadora asignada a cada persona (0 a 9)
+            int idAux;
+
+            // AHORA SE AGREGA EL ID DE RECURSO COMO SALIDA
+            Procedure Solicitar(idP : in int, idRec : out int) {
+                push(c, idP);               // encolar respetando orden de llegada
+                signal(solicitud);          // aviso por si empleado está dormido
+                wait(espera);
+                idRec = asignada[idP];      // parámetro de salida
+            }
+
+            // AHORA SE ENCOLA COMO DISPONIBLE
+            Procedure Liberar(idRec : in int) {
+                push(disponibles, idRec);
+                signal(liberado);           // aviso por si empleado está dormido
+            }
+
+            Procedure Atender() {
+                // Se queda dormido sólo si no había nadie esperando para imprimir
+                // La primera persona que llegue tendrá que despertarlo para que siga su labor
+
+                if (empty(c)) wait(solicitud);              // evito busy-waiting por cola de solicitudes
+                
+                pop(c, idAux);
+
+                // Se queda dormido sólo si no había ninguna fotocopiadora libre para asignar
+                // La primera persona que libere un recurso tendrá que despertarlo para que siga su labor
+
+                if (empty(disponibles)) wait(liberado);     // evito busy-waiting por cola de recursos
+                
+                pop(disponibles, asignada[idAux]);
+                signal(espera);
+            }
+        }
+
+        Process Persona[id: 0..N-1] {
+            int rec_asignado;
+
+            Fotocopiadora.Solicitar(id, rec_asignado);
+            Fotocopiar(rec_asignado);
+            Fotocopiadora.Liberar(rec_asignado);
+        }
+
+        Process Empleadoc{
+            int id_siguiente;
+
+            for i= 0 to N-1 {
+                Fotocopiadora.Atender();
+            }
+        }
