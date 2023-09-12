@@ -9,7 +9,7 @@ parte de una persona existe una función Moneda() que retorna el valor de la mon
         // ¿sólo 1 persona puede juntar 1 moneda a la vez?
         Procedure JuntarMoneda(valor : out int) {
           // Conseguir moneda de $1, $2 o $5
-          valor = Moneda();       // ¿esto es inmediato?
+          valor = Moneda();     
         }
       }
 
@@ -26,13 +26,13 @@ parte de una persona existe una función Moneda() que retorna el valor de la mon
 
         // Se espera hasta que todo el equipo haya terminado
         Procedure Sumar(miSuma : in int, sumaGrupo : out int) {
-        total = total + miSuma;     // sumar a partir de entrada
-        terminaron++;
+              total = total + miSuma;     // sumar a partir de entrada
+              terminaron++;
 
-        if (terminaron == 4) signal_all(espera_fin);
-        else wait(espera_fin);
+              if (terminaron == 4) signal_all(espera_fin);
+              else wait(espera_fin);
 
-        sumaGrupo = total;          // devolver total como salida
+              sumaGrupo = total;          // devolver total como salida
       }
     }
 
