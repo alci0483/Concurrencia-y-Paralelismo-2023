@@ -4,7 +4,7 @@ alumno al llegar espera a que le den el enunciado, resuelve el examen, y al term
 los procesos deben terminar su ejecución; suponga que la profesora tiene una función corregirExamen que recibe un examen y devuelve un entero con la nota. 
 
 process Preceptor{
-  text examen=..;
+  text examen=..;    // es el mismo examen para cada alumno
   Aula.entregarExamen(examen);
 }
 
@@ -13,15 +13,15 @@ process Alumno[id:0..44]{
   int nota;
   Aula.recibirExamen(examen);
   //resuelve el examen
-  Aula.entrega(id,examen,nota);
+  Aula.entregaExamenAlumno(id,examen,nota);
 }
 
-process PRofesora{
+process Profesora{
   int idAlumno, nota;
   text examen;
 
   for i=0..44 {
-    Aula.siguiente(id)
+    Aula.siguiente(idAlumno,examen);
     nota=CorrigeExamen(examen,idAlumno);
     Aula.Resultado(idAlumno,nota);
   }
@@ -29,40 +29,41 @@ process PRofesora{
 }
 
 Monitor Aula{
-  cond preceptor, espera-alumno,hayExamen
-  text examen;
+  cond espera_preceptor, espera_alumno,hayExamen
+  text examen;   
   int llegados;
   cola c;
   cond espera_nota;
   int notas[45];
 
-  procedure EntregaExamen(e: in text){
-    if(llegados < 45) wait(preceptor);i
-    e=examen
+  procedure EntregarExamen(e: in text){
+    if(llegados < 45) wait(espera_preceptor);
+    examen=e;
+    signal_all(espera_alumno);
   }
 
+  procedure recibirExamen(e: out text){
+    llegados++;
+    if(llegados==45) signal(espera_preceptor);
+    wait(espera_alumno)
+    e=examen;
+  }
 
+  procedure entregaExamenAlumno(idA:in int, e:in text, nota:out int){
+    push(c,idA,examen);
+    signal(hayExamen);
+    wait(espera_nota);
+    nota=notas[idA];
+  }
 
+  procedure siguiente(idA:out int, e: out text){
+    if(empty(c)) wait(hayExamen);
+    pop(c,idA,examen);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  procedure resultado(idA, nota:in int){
+    notas[idA]=nota;
+    signall(espera_nota);
+  }
 
 }
