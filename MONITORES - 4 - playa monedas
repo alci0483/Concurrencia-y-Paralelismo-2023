@@ -4,15 +4,6 @@ que cada integrante del grupo junta 15 monedas de a una en una playa (las moneda
 grupo. Al finalizar cada persona debe conocer el monto total juntado por su grupo. Nota: maximizar la concurrencia. Suponga que para simular la búsqueda de una moneda por 
 parte de una persona existe una función Moneda() que retorna el valor de la moneda encontrada.
 
-      Monitor Playa {
-    
-        // ¿sólo 1 persona puede juntar 1 moneda a la vez?
-        Procedure JuntarMoneda(valor : out int) {
-          // Conseguir moneda de $1, $2 o $5
-          valor = Moneda();     
-        }
-      }
-
       Monitor Equipo[id: 0..4] {
         int llegaron = 0, total = 0, terminaron = 0;
         Cond espera_inicio, espera_fin;
@@ -42,10 +33,8 @@ parte de una persona existe una función Moneda() que retorna el valor de la mon
 
       Equipo[nroEquipo].Llegada();
     
-      for i = 1..15 -> {
-        Playa.JuntarMoneda(valor);
-        miSuma = miSuma + valor;
-      }
+      for i = 1..15 -> miSuma = miSuma + moneda(); //suma la moneda juntada
+      
 
       Equipo[nroEquipo].Sumar(miSuma, sumaGrupo);
     }
