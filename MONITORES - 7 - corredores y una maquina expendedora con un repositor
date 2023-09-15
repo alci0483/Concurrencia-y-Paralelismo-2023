@@ -15,36 +15,53 @@ corredores se encolen.
       }
     }
 
-    Monitor Expendedora {
-      int botellas = 20;
-      bool libre = true;
-      Cond espera, rep, listo;
+    Monitor Admin{
+        bool libre=true;
+        cond espera;
+        int cant_espera=0;
 
-      Procedure Usar() {
-        if (not libre) wait(espera);
-
-        if (botellas == 0){
-            libre = false;
-            signal(rep);        // avisar a repositor
-            wait(listo);        // permitir que se siga haciendo fila
-            libre = true;
+        procedure Solicitar(){
+            if(libre) libre = false;
+            else{
+                cant_espera++;
+                wait(espera);
+            }
         }
 
+        procedure liberar(){
+            if(cant_espera > 0){
+                cant_espera--;
+                signal(espera);
+            }else libre=true;
+        }
+    }
+
+    Monitor Expendedora {
+      int botellas = 20;
+      Cond espera, repositor;
+
+      Procedure Usar() {
+         if (botellas == 0){
+            signal(repositor);        // avisar a repositor
+            wait(espera);    // permitir que se siga haciendo fila
+         }
+
         botellas--;
-        signal(espera);         // despertar al siguiente (si hay)
       }
 
       Procedure Reponer() {
-        if (botellas > 0) wait(rep);    // dormirme sólo si hay botellas
+        if (botellas > 0) wait(repositor);    // dormirme sólo si hay botellas
         botellas = 20;
-        signal(listo);                  // despertar a corredor
+        signal(espera);                  // despertar a corredor
       }
     }
 
     Process Corredor[id: 0..C-1] {
       Carrera.Llegada();
       // Correr hasta la meta...
+      Admin.Solicitar();
       Expendedora.Usar();
+      Admin.liberar();
     }
 
     Process Repositor {
