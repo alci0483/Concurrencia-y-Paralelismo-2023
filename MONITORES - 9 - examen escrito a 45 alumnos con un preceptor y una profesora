@@ -1,0 +1,68 @@
+9. En un examen de la secundaria hay un preceptor y una profesora que deben tomar un examen escrito a 45 alumnos. El preceptor se encarga de darle el enunciado del examen a los alumnos
+cundo los 45 han llegado (es el mismo enunciado para todos). La profesora se encarga de ir corrigiendo los exámenes de acuerdo al orden en que los alumnos van entregando. Cada
+alumno al llegar espera a que le den el enunciado, resuelve el examen, y al terminar lo deja para que la profesora lo corrija y le envíe la nota. Nota: maximizar la concurrencia; todos
+los procesos deben terminar su ejecución; suponga que la profesora tiene una función corregirExamen que recibe un examen y devuelve un entero con la nota. 
+
+process Preceptor{
+  text examen=..;
+  Aula.entregarExamen(examen);
+}
+
+process Alumno[id:0..44]{
+  text examen;
+  int nota;
+  Aula.recibirExamen(examen);
+  //resuelve el examen
+  Aula.entrega(id,examen,nota);
+}
+
+process PRofesora{
+  int idAlumno, nota;
+  text examen;
+
+  for i=0..44 {
+    Aula.siguiente(id)
+    nota=CorrigeExamen(examen,idAlumno);
+    Aula.Resultado(idAlumno,nota);
+  }
+
+}
+
+Monitor Aula{
+  cond preceptor, espera-alumno,hayExamen
+  text examen;
+  int llegados;
+  cola c;
+  cond espera_nota;
+  int notas[45];
+
+  procedure EntregaExamen(e: in text){
+    if(llegados < 45) wait(preceptor);i
+    e=examen
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}
