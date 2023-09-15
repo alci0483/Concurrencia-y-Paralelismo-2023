@@ -3,26 +3,33 @@ está listo (han llegado los 5 jugadores que lo componen), debe enfrentarse a ot
 los otros dos equipos juegan en la cancha 2). Una vez que el equipo conoce la cancha en la que juega, sus jugadores se dirigen a ella. Cuando los 10 jugadores del partido llegaron 
 a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos los jugadores del partido se retiran (no es necesario que se esperen para salir).
 
-    Monitor Club {
-      int llegados[4] = ([4] 0);      // cuántos jugadores hay asignados en cada equipo
-      int completos = 0;              // cuántos equipos tienen 5 jugadores
-      int nroCancha[4] = ([4] -1);    // cuál es la cancha que le toca a cada equipo
-      Cond equipo[4];
+    Monitor Equipo[id:0..3]{
+      int llegados=0; numC;
+      Cond espera;
 
-      Procedure Llegada(nroEq:in int, nroCancha : out int) {
-        nroEq = DarEquipo();
-        llegados[nroEq]++;
+      Procedure Llegada(nroCancha : out int) {
+        llegados++;
 
-        if (llegados[nroEq] < 5) wait(equipo[nroEq]);
+        if (llegados < 5) wait(espera);
         else {
               // Soy el jugador que completa el equipo...
-              nroCancha[nroEq] = completos / 2;
-              completos++;
-              signal_all(equipo[nroEq]);      // despertar a todo mi equipo
+              Club.listo(numC);
+              signal_all(espera);      // despertar a todo mi equipo
         }
 
-        nroCancha = nroCancha[nroEq];       // devolver como salida al completar equipo
+        nroCancha = numC;       // devolver como salida al completar equipo
       }
+    }
+
+
+    Monitor Club{
+         int completos;
+
+         Procedure Listo(nroCancha : out int) {
+           completos++;
+           if(completos <= 2) nroCancha=0;
+           else nroCancha=1;
+         }
     }
 
     Monitor Cancha[id: 0..1] {
@@ -45,9 +52,10 @@ a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos 
     }
 
     Process Jugador[id: 0..19] {
-      int nroEq, nroCancha;
+      int nroEq = DarEquipo();
+      int nroCancha;
 
-      Club.Llegada(nroEq, nroCancha);
+      Esquipo[nroEq].Llegada(nroEq, nroCancha);
       Cancha[nroCancha].Llegada();
       // Retirarse sin esperar al resto...
     }
