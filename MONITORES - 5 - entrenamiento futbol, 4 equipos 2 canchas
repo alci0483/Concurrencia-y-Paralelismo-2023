@@ -15,10 +15,10 @@ a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos 
 
         if (llegados[nroEq] < 5) wait(equipo[nroEq]);
         else {
-            // Soy el jugador que completa el equipo...
-            nroCancha[nroEq] = completos / 2;
-            completos++;
-            signal_all(equipo[nroEq]);      // despertar a todo mi equipo
+              // Soy el jugador que completa el equipo...
+              nroCancha[nroEq] = completos / 2;
+              completos++;
+              signal_all(equipo[nroEq]);      // despertar a todo mi equipo
         }
 
         nroCancha = nroCancha[nroEq];       // devolver como salida al completar equipo
