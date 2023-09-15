@@ -9,7 +9,7 @@ a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos 
       int nroCancha[4] = ([4] -1);    // cuál es la cancha que le toca a cada equipo
       Cond equipo[4];
 
-      Procedure Llegada(nroEq, nroCancha : out int) {
+      Procedure Llegada(nroEq:in int, nroCancha : out int) {
         nroEq = DarEquipo();
         llegados[nroEq]++;
 
@@ -25,7 +25,7 @@ a la cancha comienza el partido, juegan durante 50 minutos, y al terminar todos 
       }
     }
 
-    Monitor Cancha[id: 0..2] {
+    Monitor Cancha[id: 0..1] {
       int llegaron = 0;
       Cond espera_inicio, espera_fin;
 
