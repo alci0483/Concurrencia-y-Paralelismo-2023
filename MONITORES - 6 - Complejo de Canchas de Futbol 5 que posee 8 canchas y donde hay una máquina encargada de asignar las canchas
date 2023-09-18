@@ -5,8 +5,26 @@ debe ir, y luego se dirige a ella. Cuando los 10 integrantes de un grupo han lle
 que dura 50 minutos; y luego se retiran. La máquina asigna el número de cancha de acuerdo al orden en que llega el primer jugador de cada grupo.
 
 
+Monitor Maquina{
+  int jugadorGrupo[8]=([8] 0);
+  int canchaAsignada=0;
 
+  Procedure indicar(g:in int, nC:out int){
+    
+    jugadorGrupo[g]++;
+    if(jugadorGrupo[g]==1) nC=canchaAsignada;
+  }
+
+}
+
+Monitor Cancha[id:0..7]{
+
+
+}
 
 process Persona[id:0..79]{
+  int grupo=...;      //la persona conoce el grupo al que pertenece
+  int nroCancha
+  Maquina.indicar(grupo,nroCancha);
 
 }
