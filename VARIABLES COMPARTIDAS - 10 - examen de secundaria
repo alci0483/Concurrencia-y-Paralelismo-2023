@@ -1,0 +1,56 @@
+10.Realice una solución concurrente de grano grueso (utilizando <> y/o <await B; S>) el siguiente problema. En un examen de la secundaria hay 
+un preceptor y una profesora que deben tomar un examen escrito a 45 alumnos. El preceptor se encarga de darle el enunciado del examen a los 
+alumnos cundo los 45 han llegado (es el mismo enunciado para todos). La profesora se encarga de ir corrigiendo los exámenes de acuerdo al orden 
+en que los alumnos van entregando. Cada alumno al llegar espera a que le den el enunciado, resuelve el examen, y al terminar lo deja para que 
+la profesora lo corrija y le dé la nota. Nota: maximizar la concurrencia; todos los procesos deben terminar; suponga que la profesora tiene una 
+función corregirExamen que recibe un examen y devuelve un entero con la nota.
+
+int alumnos_llegados=0;
+bool obtener_enunciado=false;
+int proximo_corregir=-1;
+ColaExamenesEntregados ce;
+text enunciadoGeneral;	//el mismo para todos los alumnos
+int notas[45];
+
+process Alumno[id:0..44]{
+	text examen;
+	int nota;
+	
+	<alumnos_llegados++>;
+	
+	<await(obtener_enunciado)>;
+	
+	examen=enunciadoGeneral;
+	
+	//empieza a rendir el examen
+	rendir(examen);
+	//termina de rendir
+	
+	<push(ce,id,examenActual)>;
+	
+	<await(proximo_corregir==id)>
+	
+	nota=notas[id];	//obtiene nota
+	
+	proximo_corregir=-1;
+}
+
+process Preceptora{
+	<await(alumnos_llegados==45)>;
+	enunciadoGeneral=...;
+	obtener_enunciado=true;	//todos los alumnos pueden otener sus enunciados	
+}
+
+process Profesora{
+	int idA;
+	text examenActual;
+
+	for i=0..44{
+		<await(not empty(ce)); pop(ce,idA,examenActual)>;
+		notas[aux]=corregirExamen(examenActual);
+		
+		<proximo_corregir=aux>
+		
+		<await (proximo_corregir == -1)>
+	}
+}
