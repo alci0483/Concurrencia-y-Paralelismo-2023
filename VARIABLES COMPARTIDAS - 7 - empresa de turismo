@@ -1,0 +1,57 @@
+7. Realice una solución concurrente de grano grueso (utilizando <> y/o <await B; S>) el siguiente problema. Una empresa de turismo 
+posee UN micro con capacidad para 50 personas. Hay un único vendedor donde C pasajeros (C > 50) intentan comprar un pasaje
+(de acuerdo al orden de llegada); si aún hay lugar se dirige al micro para subir; en caso contrario se retira. El micro espera a 
+que suban los 50 pasajeros (suben de a uno y sin importar el orden), luego realiza el viaje, y cuando llega al destino deja bajar a 
+todos los pasajeros. 
+
+ColaPasajerosEspera cpe;
+int siguiente=-1, cantSubio=0;
+bool pasa=false;
+bool bajarse=false;
+bool sube=false;
+
+process Pasajero[id:0..C-1]{
+	bool subio;
+	
+	<push(cpe,id)>;
+	
+	<await(siguiente==id)>;
+	
+	<await(pasa);subio=sube>;
+	pasa=false;
+	
+	
+	if(subio) <cantSubio++>; //sube al micro
+	else //se retira sin subir;
+	
+	if(subio) <await(bajarse)>;
+
+  //se retira
+}
+
+process Vendedor{
+	int pasajes_vendidos=0;
+	
+	while(true){
+	
+		<await(not empty(cpe)); pop(cpe,siguiente); pasajes_vendidos++)>;
+		
+		
+		if(pasajes_vendidos<50) <sube=true>;
+			
+		pasa=true;
+		
+		<await(not pasa)>;
+		sube=false;	
+	}
+	
+}
+
+process Micro{
+	<await(cantSubio == 50)>;
+	//empieza el viaje
+	...
+	//termina el viaje
+	
+	bajarase=true;
+}
