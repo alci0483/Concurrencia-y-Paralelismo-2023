@@ -49,7 +49,7 @@ process Persona[id:0..79]{
   int grupo=...;      //la persona conoce el grupo al que pertenece
   int nroCancha
   Maquina.indicar(grupo,nroCancha);
-  Cancha.dirigirse();
+  Cancha[nroCancha].dirigirse();
   //Se retiran del complejo de canchas
 }
 
