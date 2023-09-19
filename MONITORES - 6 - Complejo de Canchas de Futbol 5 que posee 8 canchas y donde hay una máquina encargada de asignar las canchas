@@ -14,9 +14,11 @@ Monitor Maquina{
     
     jugadorGrupo[g]++;
     if(jugadorGrupo[g]==1) {
-      nC=canchaAsignada;
-      canchaAsignada++;
+      canchaAsignada[g]=canchaActual;
+      canchaActual++;
     }
+
+    nC=canchaAsignada[g];
   }
 
 }
