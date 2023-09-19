@@ -53,9 +53,9 @@ process Persona[id:0..79]{
   //Se retiran del complejo de canchas
 }
 
-process Partido[id:0..7] {
-  iniciarPartido();
+process PartidoCancha[id:0..7] {
+  Cancha[id].iniciarPartido();
   delay_minutos(50);  //se juega el partido
-  terminoPartido();
+  Cancha[id].terminoPartido();
 }
 
