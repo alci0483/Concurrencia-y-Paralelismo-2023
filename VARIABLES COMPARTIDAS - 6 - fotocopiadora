@@ -67,8 +67,7 @@ e) Modifique la solución de (c) para el caso en que además hay un proceso Coor
 le indica a cada persona cuando puede usar la impresora.
 
   ColaEdadPersonas c;    //cola ordenada por edad de las personas
-  int siguiente=-1; personas=0;
-
+  int siguiente=-1; 
   process Persona[id:0..N-1]{
     int edad=...;
     text documento;
@@ -83,6 +82,7 @@ le indica a cada persona cuando puede usar la impresora.
 
   process Coordinador{
     int aux;
+    int personas=0;
 
     while(personas < N){
       <await(not empty(c); pop(c,aux)>;
