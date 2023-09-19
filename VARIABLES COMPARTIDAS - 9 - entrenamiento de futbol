@@ -1,0 +1,40 @@
+9. Realice una solución concurrente de grano grueso (utilizando <> y/o <await B; S>) el siguiente problema. En un entrenamiento de futbol hay 25 jugadores 
+y un entrenador. Cuando los 25 jugadores han llegado el entrenador le da una charla técnica a cada uno de ellos (de a uno a la vez) en orden aleatorio 
+(es decir que cuando el entrenador está libre elige a cualquiera de los jugadores con los que aún no habló). Cuando un jugador termino su charla técnica con 
+el entrenador, corre durante 30 minutos y luego se retira. El entrenador se retira después de hablar con los 25 jugadores. 
+Nota: maximizar concurrencia; suponga que existe una función Siguiente llamada por el entrenador que le devuelve un número aleatorio queindica el ID de un 
+jugador con el que aún no hablo.
+
+  int jugadores=0;
+  int proximo=-1;
+
+  process Jugador[id:0..24]{
+	
+	  <jugadores++>;
+	
+	  <await(proximo==id)>;
+	
+	  //escucha la charla tecnica del entrenador
+	  ...
+	  //termina la charla tecnica
+	
+	  proximo=-1;
+	
+	  delay_minutos(30);	//se va a correr 30 minutos
+	
+	  //el jugador se retira
+  }
+
+  process Entrenador{
+	
+	  <await(jugadores==25)>;	//llegaron los 25 jugadores al entrenamiento de futbol
+
+	  for i=0 .. 24{
+		  <proximo=Siguiente()>;
+		  //le da una charla tecnica a un jugador
+		
+		  <await(proximo == -1)>;
+	  }
+	
+	  //el entrenador se retira
+}
