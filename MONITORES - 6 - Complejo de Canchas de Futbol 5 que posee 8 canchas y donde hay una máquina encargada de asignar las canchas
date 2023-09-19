@@ -6,15 +6,12 @@ que dura 50 minutos; y luego se retiran. La máquina asigna el número de cancha
 
 
 Monitor Maquina{
-  int jugadorGrupo[8]=([8] 0);
   int canchaAsignad[8]=([8] -1);
   int canchaActual=0;
 
-  Procedure indicar(g:in int, nC:out int){
-    
-    jugadorGrupo[g]++;
-    if(jugadorGrupo[g]==1) {
-      canchaAsignada[g]=canchaActual;
+  Procedure indicar(ng:in int, nC:out int){
+    if(canchaAsignada[ng]==-1) {
+      canchaAsignada[ng]=canchaActual;
       canchaActual++;
     }
 
