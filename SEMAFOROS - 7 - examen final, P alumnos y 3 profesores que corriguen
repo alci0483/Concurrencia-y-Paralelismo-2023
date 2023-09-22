@@ -40,7 +40,7 @@ Process Alumno[id:0..P-1]{
     
 process Profesor [id:0..2] {
     text examen;
-    int idAlumno, reservado=0;  
+    int idAlumno;  
     bool seguir=true;
 
     P(fin)
