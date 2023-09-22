@@ -77,7 +77,89 @@ sem mutex=1;
 
 d) Modifique la solución de (b) para el caso en que además haya un Empleado que le indica a cada persona cuando debe usar la fotocopiadora.
 
+  sem mutex=1;
+  sem solicitud=0;
+  sem continuar=0;
+  sem turno[N]=([N] 0);
+  Cola c;
 
+  process Persona[id:0..N-1] {
+    P(mutex)
+    push(c,id);
+    V(mutex)
+
+    V(solicitud)
+    P(turno[id])
+
+    fotocopiar();
+    V(continuar);
+  }
+
+process Empleado {
+  int siguiente;
+
+  while(true){
+    P(solicitud)
+
+    P(mutex)
+    pop(c,siguiente);
+    V(mutex);
+    
+    V(turno[siguiente])
+    
+    P(continuar)
+  }
+}
 
 
 e) Modificar la solución (e) para el caso en que sean 10 fotocopiadoras. El empleado le indica a la persona cuando puede usar una fotocopiadora, y cual debe usar. 
+
+  sem mutex=1;
+  sem mutexImpresora=1;
+  sem solicitud=0;
+  sem libres=10;
+  sem turno[N]=([N] 0);
+  int impresoraAsignada[N]=([N] -1);    //id de la impresora asignada a cada persona (0..9)
+  ColaImpresorasLibres cI;              //ids de las impresoras libres
+  Cola c;
+
+  process Persona[id:0..N-1] {
+    int idImpresora;
+    
+    P(mutex)
+    push(c,id);
+    V(mutex)
+
+    V(solicitud)
+    P(turno[id])
+
+    idImpresora=ImpresoraAsignada[id];
+    fotocopiar(idImpresora);
+
+    P(mutexImpresora)
+    push(cI,idImpresora)
+    V(mutexImpresora)
+    
+    V(libres)
+  }
+
+process Empleado {
+  int siguiente, idImpresora;
+
+  while(true){
+    P(solicitud)
+
+    P(mutex)
+    pop(c,siguiente);
+    V(mutex);
+
+    P(libres)
+
+    P(mutexImporesora)
+    pop(cI,idImpresora);
+    P(mutexImporesora)
+
+    impresoraAsignada[id]=idImpresora;
+    V(turno[siguiente])
+  }
+} 
