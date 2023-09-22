@@ -1,6 +1,6 @@
-En un examen final hay P alumnos y 3 profesores. Cuando todos los alumnos han llegado comienza el examen. Cada alumno resuelve 
-su examen, lo entrega y espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los 
-exámenes respectando el orden en que los alumnos van entregando. Nota: todos los procesos deben terminar. 
+7. En un examen final hay P alumnos y 3 profesores. Cuando todos los alumnos han llegado comienza el examen. Cada alumno resuelve su examen, lo entrega y 
+espera a que alguno de los profesores lo corrija y le indique la nota. Los profesores corrigen los exámenes respectando el orden en que los alumnos van 
+entregando. Nota: todos los procesos deben terminar.
 
 colaExamenesEntregados c ; 
 int contador =0;
@@ -8,9 +8,8 @@ sem barrera=0;
 
 sem mutex =1 ; 
 sem entregas=0;
-sem notif[P]=([P] 0;
-
-int corregido[P]=([P] -1);
+sem notificacion[P]=([P] 0;
+int nota[P]=([P] -1);
 
 int reservado=0;
 sem fin=1;
@@ -35,13 +34,13 @@ Process Alumno[id:0..P-1]{
     
     V(entregas);
         
-    P(notif[id]));
+    P(notificacion[id]));
     
 }
     
 process Profesor [id:0..2] {
     text examen;
-    int idAlumno;  
+    int idAlumno, reservado=0;  
     bool seguir=true;
 
     P(fin)
