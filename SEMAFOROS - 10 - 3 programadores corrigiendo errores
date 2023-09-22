@@ -1,0 +1,43 @@
+En una empresa de software hay 3 programadores que deben arreglar errores informados por N clientes. Los clientes continuamente están trabajando, y cuando encuentran 
+un error envían un reporte a la empresa para que lo corrija (no tienen que esperar a que se resuelva). Los programadores resuelven los reclamos de acuerdo al orden 
+de llegada, y si no hay reclamos pendientes trabajan durante una hora en otros programas. Nota: los procesos no deben terminar (trabajan en un loop infinito); suponga 
+que hay una función ResolverError que simula que un programador está resolviendo un reporte de un cliente, y otra Programar que simula que está trabajando en otro programa.
+
+sem mutex=1;
+sem resolver=0;
+
+ColaErroresInformados c;
+int cantErrores=0;
+
+process Clientes(id:0..N-1){
+  text reporte;
+
+  while(true){
+      //Trabaja
+
+      //encontro error
+      encontreError(reporte)
+      
+      P(mutex)
+      push(c,reporte);
+      V(mutex)
+    
+  }
+}
+
+process Programador(id:0..2){
+  text reporte;
+  bool seguir;
+  while(true){
+    P(mutex)
+    if(not empty(c)) pop(c,reporte); 
+    else seguir=false;
+    V(mutex)
+
+    if(seguir){
+      Programar();
+      delayminutos(60);
+    }else resolverError(reporte);
+
+  }
+}
