@@ -29,7 +29,7 @@ process Profesora{
 }
 
 Monitor Aula{
-  cond espera_preceptor, espera_alumno,hayExamen
+  cond espera_preceptor, espera_alumno,hayExamen;
   text examen;   
   int llegados;
   cola c;
