@@ -18,7 +18,7 @@ profesor le da la nota y el alumno se retira. Cuando un profesor está libre lla
         pop(profesoresLibres, idProfesor);
       }
 
-      Procedure Próximo(idProfesor: in int) { 
+      Procedure Próximo(idProfesor: in int, a: out int) { 
         atendidos++;
         a=atendidos;
         push(profesoresLibres, idProfesor);
