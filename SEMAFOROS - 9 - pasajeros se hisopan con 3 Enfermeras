@@ -1,14 +1,10 @@
-Simular la atención en una Terminal de Micros que posee 3 puestos para hisopar a 150
-pasajeros. En cada puesto hay una Enfermera que atiende a los pasajeros de acuerdo al
-orden de llegada al mismo. Cuando llega un pasajero se dirige al puesto que tenga menos
-gente esperando. Espera a que la enfermera correspondiente lo llame para hisoparlo, y luego
-se retira. Nota: suponer que existe una función Hisopar() que simula la atención del pasajero
-por parte de la enfermera correspondiente.
-
+9. Simular la atención en una Terminal de Micros que posee 3 puestos para hisopar a 150 pasajeros. En cada puesto hay una Enfermera que atiende a los pasajeros de 
+acuerdo al orden de llegada al mismo. Cuando llega un pasajero se dirige al puesto que tenga menos gente esperando. Espera a que la enfermera correspondiente lo 
+llame para hisoparlo, y luego se retira. Nota: suponer que existe una función Hisopar() que simula la atención del pasajero por parte de la enfermera correspondiente.
 
 ColaPuesto cola[3];                 //cola para cada uno de los tres puestos
 int cantPasajerosPueto[3]=([3] 0);    //cantidad de pasajeros en cada cola
-sem auxiliar=1;
+sem mutexAuxiliar=1;
 sem mutex[3]=([3] 1);                      // Semáforo para uso atómico de cola
 sem solicitud[3]= ([3] 0);              
 sem pasa[150]= ([150] 0);                  
@@ -17,10 +13,10 @@ sem listo[3] = ([3] 0);
 process Pasajero[id: 0..149] {
     int miPuesto;    
 
-    P(auxiliar)
-    miPuesto=btenerMinimaFila(cantPasajerosPuesto);
+    P(mutexAuxiliar)
+    miPuesto=btenerMinimaFila(cantPasajerosPuesto);    //se supone que esta funcion hace lo que dice
     cantPasajerosPuesto[miPuesto]++;
-    V(auxiliar)
+    V(mutexAuxiliar)
 
     P(mutex[miPuesto])
     push(cola[miPuesto],id);
@@ -50,9 +46,9 @@ process Enfermera [id:0..2]{
         Hisopar();
         V(pasa[idPasajero]);
 
-        P(auxiliar)
+        P(mutexAuxiliar)
         cantPasajerosPuesto[id]--;
-        V(auxiliar)
+        V(mutexAuxiliar)
     } 
 }
 
