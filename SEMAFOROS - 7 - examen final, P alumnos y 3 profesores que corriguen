@@ -56,7 +56,7 @@ process Profesor [id:0..2] {
        
         corregido[idAlumno]=corregirexamen(examen);
        
-        V(notif[idAlumno]);
+        V(notificacion[idAlumno]);
 
         P(fin);
     }
