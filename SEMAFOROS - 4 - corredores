@@ -1,0 +1,64 @@
+4. Se debe simular una maratón con C corredores donde en la llegada hay UNA máquina expendedoras de agua con capacidad para 20 botellas. Además, existe un 
+repositor encargado de reponer las botellas de la máquina. Cuando los C corredores han llegado al inicio comienza la carrera. Cuando un corredor termina 
+la carrera se dirigen a la máquina expendedora, espera su turno (respetando el orden de llegada), saca una botella y se retira. Si encuentra la máquina
+sin botellas, le avisa al repositor para que cargue nuevamente la máquina con 20 botellas; espera a que se haga la recarga; saca una botella y se retira. 
+Nota: maximizar la concurrencia; mientras se reponen las botellas se debe permitir que otros corredores se encolen.
+
+sem mutex=1;
+sem barrera=0;
+int contador=0;
+sem turno[C]=([C] -1);
+sem repositor=0;
+sem seguir=0;
+int botellas=20;
+bool libre=true;
+Cola c;
+
+process Corredor[id:0..C-1] {
+  int siguiente;
+
+  P(mutex)
+  contador++;
+  if(contador==C)
+    for i:0..C-1 -> V(barrera);
+  V(mutex)
+
+  P(barrera)
+
+  //Corre la maraton
+  //...
+  //llega a la maeta
+
+  P(mutex)
+  if(libre){
+    libre=true;
+    V(mutex)
+  }else{
+    push(c,id);
+    V(mutex)
+    P(turno[id])
+  }
+
+  if(botellas==0){
+    V(repositor)
+    P(seguir)
+  }
+
+  botellas--  //saco botellas
+
+  P(mutex)
+  if(empty(c)) libre=true
+  else{
+    pop(c,siguiente);
+    V(turno[siguiente])
+  }
+  P(mutex)
+}
+
+process Repositor {
+  while(true) {
+    P(repositor)
+    botellas=20;
+    V(seguir)
+  }
+}
