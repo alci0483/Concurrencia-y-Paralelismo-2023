@@ -1,0 +1,64 @@
+8. Suponga que se tiene un curso con 50 alumnos. Cada alumno elije una de las 10 tareas para realizar entre todos. Una vez que todos los alumnos eligieron su tarea comienzan 
+a realizarla. Cada vez que un alumno termina su tarea le avisa al profesor y se queda esperando el puntaje del grupo. Cuando todos los alumnos que tenían la misma tarea 
+terminaron el profesor les otorga un puntaje que representa el orden en que se terminó esa tarea. Nota: Para elegir la tarea suponga que existe una función elegir que le asigna 
+una tarea a un alumno (esta función asignará 10 tareas diferentes entre 50 alumnos, es decir, que 5 alumnos tendrán la tarea 1, otros 5 la tarea 2 y así sucesivamente para las 10 tareas).
+
+sem mutex=1;
+int eligieron=0;
+sem comenzar=0;
+ColaDeTareas c;
+sem solicitud=0;
+sem notificacion[10]=([10] 0);
+int notas[10];
+
+
+process Alumno[id:0..40]{
+    int nroMiTarea= elegir();
+    text tarea;
+
+    P(mutex)
+    eligieron++
+    if(eligieron == 50){ 
+        for i= 0..49 
+            V(comenzar)
+    V(mutex)
+
+    P(comenzar)
+    //...
+    resolverTarea(tarea);
+
+    P(mutex)
+    push(c,tarea,nroMiTarea);
+    V(mutex)
+
+    V(solicitud)
+
+    P(notificacion[nroMiTarea])
+    print(notas[nroMiTarea]);
+}
+
+
+process Profesor{
+    int terminado[10]=([10] 0);
+    text tarea;
+    int numTarea;
+    int puntajeActual=10;
+
+    for i= 0..49 {
+        P(solicitud)
+
+        P(mutex)
+        pop(c,tarea,numTarea);
+        V(mutex)
+
+        terminado[numTarea]++;
+
+        if(terminado[numTarea]== 5){
+            notas[numTarea]=puntajeActual;
+            puntajeActual--;
+            for i=0..4 V(notificacion[numTarea]);
+        }
+    }
+
+}
+
