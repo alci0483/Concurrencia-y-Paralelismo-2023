@@ -1,0 +1,57 @@
+5. Una empresa de turismo posee 4 combis con capacidad para 25 personas cada una y UN vendedor que vende los pasajes a los clientes de acuerdo al orden de llegada. 
+Hay C clientes que al llegar intentan comprar un pasaje para una combi en particular (el cliente conoce este dato); si aún hay lugar en la combi seleccionada se le 
+da el pasaje y se dirige hacia la combi; en caso contrario se retira. Cada combi espera a que suban los 25 pasajeros, luego realiza el viaje, y cuando llega al 
+destino deja bajar a todos los pasajeros. Nota: maximizar la concurrencia; suponga que para cada combi al menos 25 clientes intentarán comprar pasaje.
+
+  sem mutex=1
+  sem solicitud=0;
+  sem turno[c]=([C] 0);
+  sem subi[4]=([4] 0);
+  sem baje[4]=([4] 0);
+  sem paso[C]=([C] false);
+  Cola c;
+
+  process Persona[id:0..C-1] {
+    int nroCombi=...;  //numero de combi que conoce cada cliente
+    P(mutex)
+    push(c,id,nroCombi);
+    V(mutex)
+
+    V(solicitud)
+    P(turno[id])
+
+    if(paso[id]){
+      V(subi[nroCombi])
+      P(baje[nroCombi])
+    }
+  }
+
+  process Vendedor {
+    int pasajesVendidos[4]=([4] 0)
+    int idCliente, nCombi;
+
+    for i=0..C-1 {
+      P(solicitud)
+
+      P(mutex)
+      pop(c,idCliente,nCombi);
+      V(mutex)
+
+      if(pasajesVendidos[nCombi] < 25) {
+        pasajesVendidos[nCombi]++;
+        paso[idCliente]=true
+      }
+
+      V(turno[idCliete])
+    }
+  }
+
+  process Combi[id:0..3]{
+    for i=0..24 -> P(subi)
+    
+    //empieza el viaje
+    //...
+    //termino el viaje
+  
+    for i=0..24 -> P(baje)
+  }
