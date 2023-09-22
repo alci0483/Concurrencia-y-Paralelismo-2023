@@ -2,54 +2,52 @@
 que la corrija, esta revisa la tarea y si está bien le avisa al alumno que puede irse, si la tarea está mal le indica los errores, el alumno corregirá esos 
 errores y volverá a entregarle la tarea a la maestra para que realice la corrección nuevamente, esto se repite hasta que la tarea no tenga errores.
 
-sem mutex=1;
-sem barrera=0;
-sem entregas=0;
-sem notificacion[40]=([40] 0);
-bool perfectos[40]=([40] false);
-text tareas[40];
-Cola c;
+    sem mutex=1;
+    sem barrera=0;
+    sem entregas=0;
+    sem notificacion[40]=([40] 0);
+    bool perfectos[40]=([40] false);
+    text tareas[40];
+    Cola c;
 
+    process Alumno[id: 0..39] {
+        bool termine = false;
 
-process Alumno[id: 0..39] {
-    bool termine = false;
+        P(barrera);                      // Esperar arranque
+        //ya tiene su tarea cargada
 
-    P(barrera);                      // Esperar arranque
-    //ya tiene su tarea cargada
+        while(not termine) {
+            resolver(tareas[id]);        // Hacer o corregir tarea
 
-    while(not termine) {
-        resolver(tareas[id]);        // Hacer o corregir tarea
+            P(mutex);                   // Esperar que se libere la SC
+            push(C, id);                // Entregar tarea
+            V(mutex);                   // Liberar SC
 
-        P(mutex);                   // Esperar que se libere la SC
-        push(C, id);                // Entregar tarea
-        V(mutex);                   // Liberar SC
-
-        V(entregas);                // Avisar a Maestra
-        P(notif[id]);               // Esperar llamado
-        termine = perfectos[id];
+            V(entregas);                // Avisar a Maestra
+            P(notif[id]);               // Esperar llamado
+            termine = perfectos[id];
+        }
+        // Se retira del salón
     }
-    // Se retira del salón
-}
 
-process Maestra {
-   int idAlumno;
+    process Maestra {
+       int idAlumno;
 
-    // Asignar una tarea a cada alumno
-    for i = 0..39 -> tareas[i] = crearTarea();
+        // Asignar una tarea a cada alumno
+        for i = 0..39 -> tareas[i] = crearTarea();
 
-    // Una vez creadas todas las tareas, permitir que resuelvan
-    for i = 0..39 -> V(barrera);
+        // Una vez creadas todas las tareas, permitir que resuelvan
+        for i = 0..39 -> V(barrera);
 
-    while(true) {
-        P(entregas);                // Esperar tarea para corregir
+        while(true) {
+            P(entregas);                // Esperar tarea para corregir
 
-        P(mutex);                   // Esperar que se libere SC
-        pop(C, idAlumno);           // Identificar alumno
-        V(mutex);                   // Liberar SC
+            P(mutex);                   // Esperar que se libere SC
+            pop(C, idAlumno);           // Identificar alumno
+            V(mutex);                   // Liberar SC
 
-        perfectos[idAlumno]=corregir(tareas[idAlumno]);  // Corregir tarea
+            perfectos[idAlumno]=corregir(tareas[idAlumno]);  // Corregir tarea
 
-        V(notif[idAlumno]);         // Notificar al alumno
+            V(notif[idAlumno]);         // Notificar al alumno
+        }
     }
-    
-}
