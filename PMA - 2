@@ -25,7 +25,7 @@ Process Coordinador {
         receive Llegada(idP);
         
         do (not empty(libres)) -> {
-            receive Desocupa(aux);
+            receive libres(aux);
             cant[aux]--;
         } od
 
