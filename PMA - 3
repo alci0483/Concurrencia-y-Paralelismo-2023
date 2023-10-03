@@ -47,7 +47,7 @@ Process Coordinador {
         receive Pedido(idImp);
         receive dejodocumento(aux);
 
-        if (dejodocumento) receive DocumentosDirector(doc);
+        if (aux) receive DocumentosDirector(doc);
         else receive Documentos(doc);
 
         send Siguiente[idImp](doc);
