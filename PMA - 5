@@ -1,0 +1,5 @@
+5. En una oficina hay un empleado para atender a N personas. Las personas pueden tener
+prioridad ALTA o BAJA (cada uno conoce su prioridad). El empleado atiende a las personas
+de acuerdo a la prioridad (primero los de ALTA y luego los de BAJA). Cada persona espera
+hasta que el empleado lo termina de atender y se retira. Nota: existe la función atender() que
+simula que el empleado está atendiendo a una persona; no debe hacerse Busy Waiting.
