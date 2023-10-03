@@ -22,12 +22,13 @@ Process Coordinador {
     int cant[5] = ([5] 0), min, idP, aux;
 
     while (true) {
-        receive Llegada(idP);
-        
+
         do (not empty(libres)) -> {
             receive libres(aux);
             cant[aux]--;
         } od
+
+        receive Llegada(idP);
 
         min = Minimo(cant);
         cant[min]++;
