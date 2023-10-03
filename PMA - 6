@@ -1,0 +1,5 @@
+6. En un consultorio hay un médico que debe atender a 15 pacientes de acuerdo al turno de cada uno de ellos (no puede atender al paciente con turno i+1 si aún no atendió al que tiene
+turno i). Cada paciente ya conoce su turno al comenzar (valor entero entre 0 y 14, o entre 1 y 15, como les resulte más cómodo), al llegar espera hasta que el médico lo llame para ser
+atendido y luego espera hasta que el médico lo termine de atender. Nota: los únicos procesos que se pueden usar son los que representen a los pacientes y al médico; se debe evitar hacer
+Busy Waiting.
+
