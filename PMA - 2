@@ -3,7 +3,7 @@ la caja donde hay menos personas esperando, una vez seleccionada espera a ser at
 
 chan Llegada(int), libres(int);
 chan RespuestaFila[P](int);
-chan LlegadaFila[5](int), Finaliza[5](char), Salida[5](char);
+chan LlegadaFila[5](int), Finaliza[5](), Salida[5]();
 chan Turno[P](char);
 
 Process Persona[id: 0..P-1] {
