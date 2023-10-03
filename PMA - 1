@@ -1,0 +1,36 @@
+1. Suponga que N personas llegan a la cola de un banco. Para atender a las personas existen 2 empleados que van atendiendo de a una y por orden de llegada a las personas
+
+  chan LLegue ( int);
+  chan Turno [P] (int);
+  chan TerminoAtenderme[2](char)
+  chan Salgo[2] (char)
+
+  Process Personas[ id: 0..P-1]{   
+    int emp;
+    
+    send  Llegue ( id ); 
+    
+    receive Turno [id] (emp); // esta persona por su canal privado espera recibir 
+    
+    receive TerminoAtenderme[emp] ();// espero a recibir  por el canal privado 
+       
+    send Salgo [emp]();//aviso por el canal privado  del empleado  que me atendio 
+  }
+
+  Process Empleado [ id: 0 ..2 ] {       
+    int idP
+         
+    while ( true ) {
+      receive LLegue( idP);  // el empleado espera a recibir por el canal Llegue el idP de
+             
+      send Turno[idP]( id); // envia por el canal privado de la persona el id del empleado  
+      
+      //que le va atender 
+      //...      
+      //el empleado esta atendiendo a la persona idP 
+      
+      send TerminoAtender[id] (); // el empleado por su canal privado   notifico a la persona  que termine de atenderle por que la persona ya sabe que empleado le atendio 
+      
+      receive Salgo[id] (); // espero que me notifiquen que la persona que termine de atender salio  del banco 
+    } 
+  }
