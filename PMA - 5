@@ -4,27 +4,39 @@ atender() que simula que el empleado está atendiendo a una persona; no debe hac
 
 chan prioridadAlta(int);
 chan prioridadBaja(int);
-cahn llegada()
+chan meFui()
 chan Turno[N](int)
 
 process Persona [ id: 0 ..N-1] {
        boolean prioridad=...;        //ya conoce su prioridad
  
        if(prioridad) send prioridadAlta(id);
-       else prioridadBaja(id)
+       else send prioridadBaja(id)
 
        send llegada() 
 
        receive Turno[id]()
        //esta siendo atendido
-       receive termino();
+       receive Turno[id]()
+
+       send meFui();
 }
 
 Process Empleado{
-       int idP
+       int idP;
   
        for i=0..N-1 {
               receive llegada(aux)
               
-              if(not empty(prioridadAlta)) receive   
+              if(not empty(prioridadAlta)) -> receive prioridadAlta(idP);
+
+              * (not empty(prioridadBaja)) and (empty(prioridadBaja)) -> receive prioridadBaja(idP);
+
+              fi
+
+              send Turno[idP]()
+              atender(idP);       //esta atendiendo a la persona
+              send Turno[idP]()
+
+              receive meFui();
 }        
