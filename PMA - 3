@@ -23,7 +23,7 @@ Process Director{
     while(true) {
         doc = generarDoc();
         send DocumentosDirector(doc);
-        send dejodocumento()true;
+        send dejodocumento(true);
         // trabajar
     }
 }
