@@ -3,7 +3,6 @@ profesor. Cuando un alumno termino su examen lo deja y espera hasta que alguno d
 toma el siguiente examen para corregir y al terminar le da la nota al alumno correspondiente. 
 
 chan entregas(int);
-chan Salida[5]();
 chan Turno[P](int), notas[P](int);
 
 process Alumno[id: 0..29] {
@@ -17,8 +16,6 @@ process Alumno[id: 0..29] {
     receive Turno[id](idProfesor);
     // me estan corrigiendo
     receive nota[id](nota);
-    
-    send Salida[idProfesor]();
 }
 
 process Profesor[id: 0..2] {
@@ -33,7 +30,5 @@ process Profesor[id: 0..2] {
         nota= corregir(examen);
         
         send notas[idAlumno]();
-        
-        receive Salida[id]();
     }
 }
