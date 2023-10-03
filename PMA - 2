@@ -23,16 +23,13 @@ Process Coordinador {
 
     while (true) {
 
-        do (not empty(libres)) -> {
-            receive libres(aux);
-            cant[aux]--;
-        } od
-
-        receive Llegada(idP);
-
-        min = Minimo(cant);
-        cant[min]++;
-        send RespuestaFila[idP](min);
+        if(not empty(libre)) -> receive libres(aux);
+                                cant[aux]--;
+        * (not empty(libre)) and (empty(libres)) -> receive Llegada(idP);
+                                                    min = Minimo(cant);
+                                                    cant[min]++;
+                                                    send RespuestaFila[idP](min);
+        fi
     }
 }
 
