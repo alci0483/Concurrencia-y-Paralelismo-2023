@@ -2,15 +2,17 @@
 profesor. Cuando un alumno termino su examen lo deja y espera hasta que alguno de los profesores (cualquiera) lo corrija y le dé la nota. Cuando un profesor está libre 
 toma el siguiente examen para corregir y al terminar le da la nota al alumno correspondiente. 
 
-chan llegada(int);
-chan LlegadaProfesor[5](int), Salida[5]();
+chan entregas(int);
+chan Salida[5]();
 chan Turno[P](int), notas[P](int);
 
 process Alumno[id: 0..29] {
     int idProfesor, nota;
     text examen;
-  
-    send Llegada(id,examen);
+
+    resolverExamen(examen);
+
+    send entregas(id,examen);
 
     receive Turno[id](idProfesor);
     // me estan corrigiendo
@@ -24,7 +26,7 @@ process Profesor[id: 0..2] {
     text examen;
 
     while (true) {
-        receive LlegadaFila(idAlumno,examen);
+        receive entregas(idAlumno,examen);
         
         send Turno[idAlumno](id);
         
