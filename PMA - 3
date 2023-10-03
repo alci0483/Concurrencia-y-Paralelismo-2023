@@ -3,7 +3,7 @@ tanto envían documentos a imprimir. Cada impresora, cuando está libre, toma un
 pedidos del director. Nota: los usuarios y el director no deben esperar a que se imprima el documento.
 
 chan Documentos(texto), Pedido(int), Siguiente[3](texto);
-chan DocumentosDirector(texto), Signal(char);
+chan DocumentosDirector(texto), dejodocumento(bool);
 
 // VALIDADO POR EL PROFE
 Process Usuario[id: 0..N-1]{
@@ -12,7 +12,7 @@ Process Usuario[id: 0..N-1]{
     while(true) {
         doc = generarDoc();
         send Documentos(doc);
-        send Signal();
+        send dejodocumento(false);
         // trabajar
     }
 }
@@ -23,7 +23,7 @@ Process Director{
     while(true) {
         doc = generarDoc();
         send DocumentosDirector(doc);
-        send Signal();
+        send dejodocumento()true;
         // trabajar
     }
 }
@@ -41,12 +41,13 @@ Process Impresora[id: 0..2] {
 Process Coordinador {
     texto doc;
     int idImp;
+    bool aux;
 
     while(true) {
         receive Pedido(idImp);
-        receive Signal();
+        receive dejodocumento(aux);
 
-        if (not empty(DocumentosDirector)) receive DocumentosDirector(doc);
+        if (dejodocumento) receive DocumentosDirector(doc);
         else receive Documentos(doc);
 
         send Siguiente[idImp](doc);
