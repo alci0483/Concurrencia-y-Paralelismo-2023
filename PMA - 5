@@ -3,3 +3,29 @@ prioridad ALTA o BAJA (cada uno conoce su prioridad). El empleado atiende a las 
 de acuerdo a la prioridad (primero los de ALTA y luego los de BAJA). Cada persona espera
 hasta que el empleado lo termina de atender y se retira. Nota: existe la función atender() que
 simula que el empleado está atendiendo a una persona; no debe hacerse Busy Waiting.
+
+chan Prioridad[2]
+cahn Aviso(boolean)
+Process Persona [ id: 0 ..N-1]
+{
+       send  Prioridad[idP] (id , prioridad,baja,alta)
+        send Aviso(true)
+       receive Respuesta[id] (atencion);
+}
+
+Process Empleado{
+   
+  
+ while (true)
+         receive Aviso(aux)
+       
+    {    if ( not empty (Prioridad[0]) —>
+            receive Prioridad[0] ( idP,baja,alta)
+             atencion = atender (baja)
+            
+   [ ] not empty (Pedido [1])  and (empty(Pedido[0])—>
+       receive Pedido[1] (idP,baja,alta)
+        atencion=atender(alta)
+   
+   
+       send Respuesta[idP](atencion)
