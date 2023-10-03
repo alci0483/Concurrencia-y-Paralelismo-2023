@@ -33,7 +33,7 @@ Process Impresora[id: 0..2] {
 
     while(true) {
         send Pedido(id);
-        receive Siguiente[id](doc);
+        receive Siguiente[id](doc); 
         // imprimir doc
     }
 }
