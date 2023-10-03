@@ -28,25 +28,21 @@ Process Director{
     }
 }
 
-Process Impresora[id: 0..2]
-{
+Process Impresora[id: 0..2] {
     texto doc;
 
-    while(true)
-    {
+    while(true) {
         send Pedido(id);
         receive Siguiente[id](doc);
         // imprimir doc
     }
 }
 
-Process Coordinador
-{
+Process Coordinador {
     texto doc;
     int idImp;
 
-    while(true)
-    {
+    while(true) {
         receive Pedido(idImp);
         receive Signal();
 
