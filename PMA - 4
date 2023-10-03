@@ -2,4 +2,12 @@
 profesor. Cuando un alumno termino su examen lo deja y espera hasta que alguno de los profesores (cualquiera) lo corrija y le dé la nota. Cuando un profesor está libre 
 toma el siguiente examen para corregir y al terminar le da la nota al alumno correspondiente. 
 
-process Alumno[]
+process Alumno[id:0..29]{
+
+
+}
+
+process Profesor[id:0..2]{
+
+
+}
