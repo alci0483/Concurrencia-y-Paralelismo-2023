@@ -1,0 +1,3 @@
+14. Hay N personas que deben usar un teléfono público de a una a la vez y de acuerdo al orden de llegada, pero dando prioridad a las que tienen que usarlo con urgencia (cada persona ya
+sabe al comenzar si es de tipo urgente o no). Nota: el teléfono NO ES un proceso, es un recurso compartido usado por las personas por medio de la función Usar_Teléfono().
+
