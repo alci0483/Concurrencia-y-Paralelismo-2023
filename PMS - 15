@@ -1,0 +1,42 @@
+15.En una mesa de exámenes hay 3 profesores que deben corregir los exámenes de 30 alumnos de acuerdo al orden en que terminaron. Cada examen es corregido por un único profesor.
+Cuando un alumno termino su examen lo deja y espera hasta que alguno de los profesores (cualquiera) lo corrija y le dé la nota. Cuando un profesor está libre toma el siguiente examen
+para corregir y al terminar le da la nota al alumno correspondiente. Cuando los 30 exámenes se han corregido los profesores se retiran. Nota: maximizar la concurrencia.
+
+process Alumnos [ id : 0 ..29] {
+    examen=resolverExamen(); 
+    Admin!entregas(id,examen); 
+    Profesor[*]?resultado ( nota); 
+}
+
+process Admin { 
+  cola c;
+  int idP
+  tex ex
+  
+  for i : 1 .. 2*30 
+    if  Alumnos[*]?entregas(idP,ex) -> push (c,idP,ex);
+    
+    [] (not empty (C)); Profesor[*]pedido(idP) -> pop(c,idP,ex); Profesor[idPF]!entregaExamen(idP,ex); 
+     fi 
+  
+  for  i : 1.. 3 
+       Profesor[*]? pedido( idAux );
+       Profesor [idAux] !entregaExamen(-1);
+  } 
+
+process Profesor[id:0..2] {    
+  int idP,nota; 
+  text ex;
+ 
+         Admin!pedido(id); 
+        Admin?entregaExamen (idP,ex);
+
+      while (idP <> -1  ) {
+          nota= corregirExamen(ex); // sigo corrigiendo 
+          Alumno[idP]!Resultado(nota);// sigo mandando la nota
+          
+          Admin ! Pedido(id); // siguen  haciendo los pedido 
+          Admin? EntregaExamen(idP,ex);// sigo recibiendo los 
+      }
+}
+     
