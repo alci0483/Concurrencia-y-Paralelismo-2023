@@ -1,2 +1,35 @@
 11.En un banco hay un empleado para cobrar a N personas. Las N personas forman una única fila y el empleado los atiende de acuerdo al orden en que llegaron. Cuando una persona es
 llamada por el cajero, le entrega la boleta a pagar y este le devuelve la boleta sellada. Notas: cada persona paga una sola boleta
+
+Process Persona[id: 0..E-1] {
+  text boleta  
+
+  Fila!pedido(id);
+  Empleado?atender();
+
+  // lo esta atendiendo el empleado
+
+  Empleado!devolver();
+}
+
+Process Fila {
+    Cola C;
+    int aux;
+    text b;
+
+    do Persona[*]?pedido(aux, b) -> push(C, aux, b);
+    [] not empty(C); Empleado?pedido() -> Empleado!turno(pop(C), b);
+    od
+}
+
+Process Empleado {
+    int idEspectador;
+    text boleta
+
+    for i = 1..E -> {
+        Fila!pedido();
+        Fila?turno(idEspectador, );
+        Espectador[idEspectador]!atender();
+        Espectador[idEspectador]?devolver();
+    }
+}
