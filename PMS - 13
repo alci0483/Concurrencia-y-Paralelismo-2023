@@ -1,53 +1,20 @@
 13.En un estadio de fútbol hay una máquina expendedora de gaseosas que debe ser usada por E Espectadores de acuerdo al orden de llegada. Cuando el espectador accede a la máquina, 
 la usa y luego se retira para dejar al siguiente. Nota: cada Espectador una sólo una vez la máquina.
 
-// OPCIÓN 1: 
-
 Process Espectador[id: 0..E-1] {
-    Fila!pedido(id);
-    Expendedora?usar();
+    Admin!pedido(id);
+    Admin?usar();
 
     // usa la máquina...
 
-    Expendedora!retiro();
+    Admin!retiro();
 }
 
-Process Fila {
-    Cola C;
-    int aux;
 
-    do Espectador[*]?pedido(aux) -> push(C, aux);
-    [] not empty(C); Expendedora?pedido() -> Expendedora!turno(pop(C));
-    od
-}
-
-Process Expendedora {
-    int idEspectador;
-
-    for i = 1..E -> {
-        Fila!pedido();
-        Fila?turno(idEspectador);
-        Espectador[idEspectador]!usar();
-        Espectador[idEspectador]?retiro();
-    }
-}
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-// OPCIÓN 2: LOS ESPECTADORES SE ORGANIZAN PARA PASARSE EL TURNO
-
-Process Espectador[id: 0..E-1] {
-    Expendedora!pedido(id);
-    Expendedora?usar();
-
-    // usa la máquina...
-
-    Expendedora!retiro();
-}
 
 Process Expendedora {
     Cola C;
-    int aux;
+    int idPersona;
     bool libre = true;
 
     do Espectador[*]?pedido(aux) -> if (libre) {libre = false; Espectador[aux]!usar(); }
@@ -55,5 +22,22 @@ Process Expendedora {
 
     [] Espectador[*]?retiro() ->    if (empty(C)) libre = true;
                                     else {pop(C, aux); Espectador[aux]!usar(); } 
+    od
+}
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+podrias ser tambien con 4 guardas
+
+
+Process Expendedora {
+    Cola C;
+    int idPersona;
+    bool libre = true;
+
+    do (libre); Espectador[*]?pedido(aux) -> libre = false;Espectador[aux]!usar(); }
+    [] (not libre);  Espectador[*]?pedido(aux) -> else push(C, aux);
+
+    [] (empty(C)) Espectador[*]?retiro() ->  libre = true;
+    [] (not empty(C)) Espectador[*]?retiro() ->  pop(C, aux); Espectador[aux]!usar(); } 
     od
 }
