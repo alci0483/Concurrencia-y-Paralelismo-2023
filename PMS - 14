@@ -1,26 +1,38 @@
 14. Hay N personas que deben usar un teléfono público de a una a la vez y de acuerdo al orden de llegada, pero dando prioridad a las que tienen que usarlo con urgencia (cada persona ya
 sabe al comenzar si es de tipo urgente o no). Nota: el teléfono NO ES un proceso, es un recurso compartido usado por las personas por medio de la función Usar_Teléfono().
 
-Process Personas[id: 0..N-1] {
+Process Persona[id: 0..N-1] {
     bool tipoUrgencia:...;  //ya conoce su urgencia
 
-    Expendedora!pedido(id);
-    Expendedora?usar();
 
-    // usa la máquina...
+    if(tipoUrgencia) Admin!llegadaUrgente(id);
+    else Admin!llegada(id);
+    
+    Admin?usar();
 
-    Expendedora!retiro();
+    usar_Telefono();
+    
+    Admin!retiro();
 }
 
 Process Admin {
-    Cola C;
-    int aux;
+    ColaUrgencia cU;
+    ColaNormal cN;
+    int idP;
     bool libre = true;
 
-    do Espectador[*]?pedido(aux) -> if (libre) {libre = false; Espectador[aux]!usar(); }
-                                    else push(C, aux);
+    do ((libre)and(not empty(cU))); Persona[*]?llegadaUrgente(idP) -> libre = false; Persona[idP]!usar();
 
-    [] Espectador[*]?retiro() ->    if (empty(C)) libre = true;
-                                    else {pop(C, aux); Espectador[aux]!usar(); } 
+    [] ((libre)and(not empty(cN))and(empty(cU))); Persona[*]?llegada(idP) -> libre = false; Persona[idP]!usar(); 
+
+    [] (not libre); Persona[*]?llegadaUrgente(idP) -> else push(cU, idP);
+
+    [] (not libre); Persona[*]?llegada(idP) -> else push(cN, idP);
+
+    [] ((empty(cU))and((empty(cN)))); Persona[*]?retiro() -> libre = true;
+
+    [] (not empty(cU));  Persona[*]?retiro() -> pop(cU, idP); Persona[idP]!usar();
+
+    [] (not empty(cN))and(empty(cU)); Persona[*]?retiro() -> pop(cN, idP); Persona[idP]!usar();
     od
 }
