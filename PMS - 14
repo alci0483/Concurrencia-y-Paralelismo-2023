@@ -1,3 +1,26 @@
 14. Hay N personas que deben usar un teléfono público de a una a la vez y de acuerdo al orden de llegada, pero dando prioridad a las que tienen que usarlo con urgencia (cada persona ya
 sabe al comenzar si es de tipo urgente o no). Nota: el teléfono NO ES un proceso, es un recurso compartido usado por las personas por medio de la función Usar_Teléfono().
 
+Process Personas[id: 0..N-1] {
+    bool tipoUrgencia:...;  //ya conoce su urgencia
+
+    Expendedora!pedido(id);
+    Expendedora?usar();
+
+    // usa la máquina...
+
+    Expendedora!retiro();
+}
+
+Process Admin {
+    Cola C;
+    int aux;
+    bool libre = true;
+
+    do Espectador[*]?pedido(aux) -> if (libre) {libre = false; Espectador[aux]!usar(); }
+                                    else push(C, aux);
+
+    [] Espectador[*]?retiro() ->    if (empty(C)) libre = true;
+                                    else {pop(C, aux); Espectador[aux]!usar(); } 
+    od
+}
