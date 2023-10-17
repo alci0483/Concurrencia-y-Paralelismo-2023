@@ -10,7 +10,7 @@ procedure Puente_1a is
     task type Camion;
 
     task Admin is
-        ENTRY Salida(peso : in integer);
+        ENTRY Salida(peso : in integer);  // para avisar que el vehiculo termino de pasar
         ENTRY PasoAuto;
         ENTRY PasoCamioneta;
         ENTRY PasoCamion;
@@ -29,17 +29,14 @@ procedure Puente_1a is
                     total := total - peso; 
                 End Salida;
             OR
-                when(total <= 4) => accept PasoAuto() do 
-                    total := total + 1; 
-                End PasoAuto;
+                when(total <= 4) => accept PasoAuto();
+                total := total + 1; 
             OR
-                when(total <= 3) => accept PasoCamioneta() do 
+                when(total <= 3) => accept PasoCamioneta();
                     total := total + 2; 
-                End PasoCamioneta;
             OR
-                when(total <= 2) => accept PasoCamion() do 
+                when(total <= 2) => accept PasoCamion();
                     total := total + 3; 
-                End PasoCamion;
             END SELECT
         end loop
     end Admin;
@@ -95,17 +92,14 @@ procedure Puente_1b is
                     total := total - peso; 
                 End Salida;
             OR
-                when(total <= 4 and PasoCamion’count == 0) => accept PasoAuto() do 
+                when(total <= 4 and PasoCamion’count == 0) => accept PasoAuto();
                     total := total + 1; 
-                End PasoAuto;
             OR
-                when(total <= 3 and PasoCamion’count == 0) => accept PasoCamioneta() do 
+                when(total <= 3 and PasoCamion’count == 0) => accept PasoCamioneta();
                     total := total + 2; 
-                End PasoCamioneta;
             OR
-                when(total <= 2) => accept PasoCamion() do 
+                when(total <= 2) => accept PasoCamion();
                     total := total + 3; 
-                End PasoCamion;
             END SELECT
         end loop
     end Admin;
