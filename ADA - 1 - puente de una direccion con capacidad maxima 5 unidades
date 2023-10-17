@@ -1,0 +1,133 @@
+1. Se requiere modelar un puente de un solo sentido, el puente solo soporta el peso de 5 unidades de peso. Cada auto pesa 1 unidad, cada camioneta pesa 2 unidades y 
+cada camión 3 unidades. Suponga que hay una cantidad innumerable de vehículos (A autos, B camionetas y C camiones).
+
+a. Realice la solución suponiendo que todos los vehículos tienen la misma prioridad.
+
+procedure Puente_1a is
+    
+    task type Auto;
+    task type Camioneta;
+    task type Camion;
+
+    task Admin is
+        ENTRY Salida(peso : in integer);
+        ENTRY PasoAuto;
+        ENTRY PasoCamioneta;
+        ENTRY PasoCamion;
+    end Admin;
+
+    arrA : array(1..A) of Auto;
+    arrB : array(1..B) of Camioneta;
+    arrC : array(1..C) of Camion;
+
+    task body Admin is
+        total : integer := 0;
+    begin
+        loop
+            SELECT
+                accept Salida(peso : in integer) do 
+                    total := total - peso; 
+                End Salida;
+            OR
+                when(total <= 4) => accept PasoAuto() do 
+                    total := total + 1; 
+                End PasoAuto;
+            OR
+                when(total <= 3) => accept PasoCamioneta() do 
+                    total := total + 2; 
+                End PasoCamioneta;
+            OR
+                when(total <= 2) => accept PasoCamion() do 
+                    total := total + 3; 
+                End PasoCamion;
+            END SELECT
+        end loop
+    end Admin;
+
+    task body Auto is
+    begin
+        Admin.PasoAuto();
+        Admin.Salida(1);
+    end Auto;
+
+    task body Camioneta is
+    begin
+        Admin.PasoCamioneta();
+        Admin.Salida(2);
+    end Camioneta;
+
+    task body Camion is
+    begin
+        Admin.PasoCamion();
+        Admin.Salida(3);
+    end Camion;
+
+begin
+    null;
+end Puente1;
+
+
+b. Modifique la solución para que tengan mayor prioridad los camiones que el resto de los vehículos.
+
+procedure Puente_1b is
+    
+    task type Auto;
+    task type Camioneta;
+    task type Camion;
+
+    task Admin is
+        ENTRY Salida(peso : in integer);
+        ENTRY PasoAuto;
+        ENTRY PasoCamioneta;
+        ENTRY PasoCamion;
+    end Admin;
+
+    arrA : array(1..A) of Auto;
+    arrB : array(1..B) of Camioneta;
+    arrC : array(1..C) of Camion;
+
+    task body Admin is
+        total : integer := 0;
+    begin
+        loop
+            SELECT
+                accept Salida(peso : in integer) do 
+                    total := total - peso; 
+                End Salida;
+            OR
+                when(total <= 4 and PasoCamion’count == 0) => accept PasoAuto() do 
+                    total := total + 1; 
+                End PasoAuto;
+            OR
+                when(total <= 3 and PasoCamion’count == 0) => accept PasoCamioneta() do 
+                    total := total + 2; 
+                End PasoCamioneta;
+            OR
+                when(total <= 2) => accept PasoCamion() do 
+                    total := total + 3; 
+                End PasoCamion;
+            END SELECT
+        end loop
+    end Admin;
+
+    task body Auto is
+    begin
+        Admin.PasoAuto();
+        Admin.Salida(1);
+    end Auto;
+
+    task body Camioneta is
+    begin
+        Admin.PasoCamioneta();
+        Admin.Salida(2);
+    end Camioneta;
+
+    task body Camion is
+    begin
+        Admin.PasoCamion();
+        Admin.Salida(3);
+    end Camion;
+
+begin
+    null;
+end Puente2;
