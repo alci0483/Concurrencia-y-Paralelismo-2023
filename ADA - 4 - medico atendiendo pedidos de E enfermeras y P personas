@@ -8,7 +8,7 @@ el escritorio, continúa trabajando y haciendo más peticiones.
 El médico atiende los pedidos dándoles prioridad a los enfermos que llegan para ser atendidos. Cuando atiende un pedido, recibe la solicitud y la procesa durante un 
 cierto tiempo. Cuando está libre aprovecha a procesar las notas dejadas por las enfermeras.
 
-procedure Clinica1 is
+procedure Clinica is
 
     task type Enfermera;
     task type Persona;
@@ -89,4 +89,4 @@ procedure Clinica1 is
 
 begin
     null;
-end Clinica1;
+end Clinica;
