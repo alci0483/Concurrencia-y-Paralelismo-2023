@@ -13,6 +13,7 @@ procedure Playa is
     task type Equipo is
         ENTRY Identificar(id : in integer);
         ENTRY Llegada;
+        ENTRY seguir();
         ENTRY Terminar(monto : in integer);
     End Equipo;
 
@@ -28,7 +29,9 @@ procedure Playa is
         ganador, suma : integer := 0;
     begin
         arrE(nroEquipo).Llegada();
-    
+
+        arrE(nroEquipo).seguir();
+
         for i in 1..15 loop
             suma := suma + Moneda();
         end loop;
@@ -51,6 +54,9 @@ procedure Playa is
             accept Llegada() do        
         end loop;
 
+        for i in 1..4 loop
+            accept seguir() do        
+        end loop;
         
         for i in 1..4 loop
             accept Terminar(monto : in integer) do
