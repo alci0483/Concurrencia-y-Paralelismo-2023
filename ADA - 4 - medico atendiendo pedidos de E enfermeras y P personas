@@ -7,7 +7,7 @@ pedido en el momento que pueda (el pedido puede ser que el médico le firme alg�
 el escritorio, continúa trabajando y haciendo más peticiones.
 El médico atiende los pedidos dándoles prioridad a los enfermos que llegan para ser atendidos. Cuando atiende un pedido, recibe la solicitud y la procesa durante un 
 cierto tiempo. Cuando está libre aprovecha a procesar las notas dejadas por las enfermeras.
-
+# hacer una tarea adicional
 procedure Clinica is
 
     task type Enfermera;
