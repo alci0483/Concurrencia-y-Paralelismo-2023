@@ -22,9 +22,7 @@ procedure Policia is
         codigo, valor : integer;
     begin
         loop
-            accept Recibir(H : in texto) do
-                test := H;
-            End Recibir;
+            Especialista.dameHuella(H : out texto);
 
             Buscar(test, codigo, valor);
             Especialista.Resultado(codigo, valor);
@@ -39,7 +37,9 @@ procedure Policia is
             test := generarHuella();
 
             for i in 1..8 loop
-                arrS(i).Recibir(test);
+                accept dameHuella(H : out texto) do
+                    H=test;
+                end dameHuella;
             end loop
 
             for i in 1..8 loop
