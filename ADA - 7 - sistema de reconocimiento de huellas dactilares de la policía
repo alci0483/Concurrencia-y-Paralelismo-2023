@@ -5,7 +5,7 @@ conocer el código de la huella con mayor valor de similitud entre las devueltas
 ciclo. Nota: suponga que existe una función Buscar(test, código, valor) que utiliza cada Servidor donde recibe como parámetro de entrada la huella test, y devuelve como parámetros de
 salida el código y el valor de similitud de la huella más parecida a test en la BD correspondiente. Maximizar la concurrencia y no generar demora innecesaria.
 
-procedure Policia1 is
+procedure Policia is
 
     task type Servidor is
         ENTRY Recibir(H : in texto);
@@ -44,7 +44,7 @@ procedure Policia1 is
 
             for i in 1..8 loop
                 accept Resultado(cod : in integer, val : in integer) do
-                    if (val > mejorValor) then
+                    if (val > mejorValor) then #entre valor mas alto de similiritud mejor
                         mejorValor := val;
                         mejorCodigo := cod;
                     end if;
@@ -55,5 +55,5 @@ procedure Policia1 is
 
 begin
     null;
-end Policia1;
+end Policia;
 
