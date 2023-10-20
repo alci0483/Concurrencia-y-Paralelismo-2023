@@ -25,6 +25,8 @@ usuario envía un pedido espera a lo sumo 2 minutos a que sea recibido por el se
                     Servidor.Pedido(doc, error);
                     if (not error) then
                         listo := true;
+                    else
+                        doc:= modificarDocumento();
                     end if;
                 OR DELAY(120)
                     delay(60);
