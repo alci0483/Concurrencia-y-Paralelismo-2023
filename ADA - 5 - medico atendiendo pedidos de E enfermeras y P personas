@@ -1,0 +1,92 @@
+4. En una clínica existe un médico de guardia que recibe continuamente peticiones de atención de las E enfermeras que trabajan en su piso y de las P personas que 
+llegan a la clínica ser atendidos.
+Cuando una persona necesita que la atiendan espera a lo sumo 5 minutos a que el médico lo haga, si pasado ese tiempo no lo hace, espera 10 minutos y vuelve a requerir 
+la atención del médico. Si no es atendida tres veces, se enoja y se retira de la clínica.
+Cuando una enfermera requiere la atención del médico, si este no lo atiende inmediatamente le hace una nota y se la deja en el consultorio para que esta resuelva su 
+pedido en el momento que pueda (el pedido puede ser que el médico le firme algún papel). Cuando la petición ha sido recibida por el médico o la nota ha sido dejada en 
+el escritorio, continúa trabajando y haciendo más peticiones.
+El médico atiende los pedidos dándoles prioridad a los enfermos que llegan para ser atendidos. Cuando atiende un pedido, recibe la solicitud y la procesa durante un 
+cierto tiempo. Cuando está libre aprovecha a procesar las notas dejadas por las enfermeras.
+
+procedure Clinica1 is
+
+    task type Enfermera;
+    task type Persona;
+
+    task Medico is
+        ENTRY AtiendeEnfermera;
+        ENTRY AtiendePaciente;
+    end Medico;
+
+    task Consultorio is
+        ENTRY Dejar(N : in texto);
+        ENTRY Sacar(N : out texto);
+    end Consultorio;
+
+    arrE : array(1..E) of Enfermera;
+    arrP : array(1..P) of Persona;
+
+    task body Persona is
+        intentos : integer := 0;
+        atendido : bool := false;
+    begin
+        while (not atendido && intentos < 3) loop
+            SELECT
+                Medico.AtiendePaciente();
+                atendido := true;
+            OR DELAY 300
+                delay(600); intentos++;
+            END SELECT
+        end loop
+    end Persona;
+
+    task body Enfermera is
+        nota : texto;
+    begin
+        loop
+            SELECT
+                Medico.AtiendeEnfermera();
+            ELSE
+                nota := hacerNota();
+                Consultorio.Dejar(nota);
+            END SELECT
+        end loop
+    end Enfermera;
+
+    task body Medico is
+        nota : texto;
+    begin
+        loop
+            SELECT
+                accept AtiendePaciente();
+            OR
+                when(AtiendePaciente.count == 0) => accept AtiendeEnfermera();
+            ELSE
+                SELECT
+                    Consultorio.Sacar(nota);
+                ELSE
+                    null;
+                END SELECT
+            END SELECT
+        end loop
+    end Medico;
+
+    task body Consultorio is
+        notas : cola;
+    begin
+        loop
+            SELECT
+                accept Dejar(N : in texto) do 
+                    push(notas, N); 
+                End Dejar;
+            OR
+                when(not empty(notas)) => accept Sacar(N : out texto) do 
+                    pop(notas, N);
+                End Sacar;
+            END SELECT
+        end loop
+    end Consultorio;
+
+begin
+    null;
+end Clinica1;
