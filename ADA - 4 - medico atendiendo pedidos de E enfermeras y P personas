@@ -15,14 +15,17 @@ procedure Clinica is
     task type Enfermera;
     task type Persona;
 
+    task Secretaria;
+
     task Medico is
         ENTRY AtiendeEnfermera;
         ENTRY AtiendePaciente;
+        ENTRY ObtenerNota(N : in texto)
     end Medico;
 
     task Consultorio is
-        ENTRY Dejar(N : in texto);
-        ENTRY Sacar(N : out texto);
+        ENTRY DejarNota(N : in texto);
+        ENTRY Sacarnota(N : out texto);
     end Consultorio;
 
     arrE : array(1..E) of Enfermera;
@@ -50,7 +53,7 @@ procedure Clinica is
                 Medico.AtiendeEnfermera();
             ELSE
                 nota := hacerNota();
-                Consultorio.Dejar(nota);
+                Consultorio.DejarNota(nota);
             END SELECT
         end loop
     end Enfermera;
@@ -63,12 +66,11 @@ procedure Clinica is
                 accept AtiendePaciente();
             OR
                 when(AtiendePaciente.count == 0) => accept AtiendeEnfermera();
-            ELSE
-                SELECT
-                    Consultorio.Sacar(nota);
-                ELSE
-                    null;
-                END SELECT
+            ELSE    
+                accept ObtenerNota(N: in text) do
+                    nota:=N;
+                end ObtenerNota;
+                resolverNota(nota);
             END SELECT
         end loop
     end Medico;
@@ -78,16 +80,25 @@ procedure Clinica is
     begin
         loop
             SELECT
-                accept Dejar(N : in texto) do 
+                accept DejarNota(N : in texto) do 
                     push(notas, N); 
-                End Dejar;
+                End DejarNota;
             OR
-                when(not empty(notas)) => accept Sacar(N : out texto) do 
+                when(not empty(notas)) => accept SacarNota(N : out texto) do 
                     pop(notas, N);
-                End Sacar;
+                End SacarNota;
             END SELECT
         end loop
     end Consultorio;
+
+    task body Secretaria is
+        nota: text;
+    begin
+        loop
+            Consultorio.SacarNota(nota);
+            Medico.ObtenerNota(nota);
+        end loop
+    end Secretaria
 
 begin
     null;
