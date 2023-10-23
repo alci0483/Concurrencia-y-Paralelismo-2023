@@ -7,11 +7,10 @@ salida el código y el valor de similitud de la huella más parecida a test en l
 
 procedure Policia is
 
-    task type Servidor is
-        ENTRY Recibir(H : in texto);
-    End Servidor;
+    task type Servidor;
 
     task Especialista is
+        ENTRY dameHuella(H : out texto);
         ENTRY Resultado(cod : in integer, val : in integer);
     End Especialista;
 
