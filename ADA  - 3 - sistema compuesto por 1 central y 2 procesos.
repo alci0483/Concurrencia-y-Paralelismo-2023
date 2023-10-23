@@ -27,7 +27,7 @@ procedure Sistema is
             SELECT
                 Central.Señal1(datos);
             OR DELAY 120
-                null;
+                null;        #pasados los 2 minutos se pasa a la siguiente iteracion, "desechando" la señal
             END SELECT
         end loop
     end Proceso1;
@@ -37,15 +37,15 @@ procedure Sistema is
         boolean ok=true;
     begin
         loop
-            if(ok) then
+            if(ok) then        #si ok esta en true quiere decir que la señal de la iteracion anterior fue enviada y tiene que enviar una nueva.
                 datos := generarSeñal();
             end if
-
+                               #si ok esta en falso quiere decir que en la iteracion anterior la señal no fue enviada y por eso debe reenviarla. 
             SELECT
                 Central.Señal2(datos);
                 ok=true;
             ELSE
-                of=false;
+                ok=false;
                 delay(60);
             END SELECT
         end loop
@@ -74,7 +74,7 @@ procedure Sistema is
                 
                 while (not ok) loop
                     SELECT
-                        when(fin.count == 0) => accept Señal2(D : in texto) do 
+                        when(fin'count == 0) => accept Señal2(D : in texto) do 
                             datos := D;
                         End Señal2;
                     OR
