@@ -31,5 +31,5 @@ Procedure Banco is
   End empleado;
 
   Begin
-    null;
+     null;
   End Banco;
