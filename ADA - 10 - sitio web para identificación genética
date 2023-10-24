@@ -1,44 +1,72 @@
-10.Hay un sitio web para identificación genética que resuelve pedidos de N clientes. Cada cliente trabaja continuamente de la siguiente manera: genera la secuencia 
+10. Hay un sitio web para identificación genética que resuelve pedidos de N clientes. Cada cliente trabaja continuamente de la siguiente manera: genera la secuencia 
 de ADN, la envía al sitio web para evaluar y espera el resultado; después de esto puede comenzar a generar la siguiente secuencia de ADN. Para resolver estos 
 pedidos el sitio web cuenta con 5 servidores idénticos que atienden los pedidos de acuerdo al orden de llegada (cada pedido es atendido por un único servidor). 
 Nota: maximizar la concurrencia. Suponga que los servidores tienen una función ResolverAnálisis que recibe la secuencia de ADN y devuelve un entero con el resultado.
 
 Procedure IdentificaciomGenetica is
 
-    task type Servidor is 
-        entry siguiente(idP: in integer);
-        entry resultado (s: in text, r: out text);
-    end Servidor;
+    task type Servidor;
 
-    task type Cliente 
+    task type Cliente is 
+        entry identificar(n: in integer);
+        entry resultado (r: in text);
+    en Cliente;
 
-    task type Admin;
+    task type Admin is
+        entry solicitud(idC: in integer,s: in text);
+        entry siguiente(idCliente: out integer,secuencia: out text);
+    end Admin;
 
     arrC: array(1 .. N) of Cliente;
-    arrS: array(1 .. 8) of Servidor;
+    arrS: array(1 .. 5) of Servidor;
 
     tas body Cliente is
+        id: integer;
         secuenciaADN: text;
         resultado: text
     begin
+        accept identificar(n: in integer) do
+            id:= n;
+        end identificar;
+        
         loop
             secuenciaADN:= generarSecuenciaAdn();
             
-            Servidor.resultado (secuenciaADN, resultado);   
+            Admin.solicitud(id, secuenciaADN);   
+
+            accept resultado(r: in text) do
+                resultado:= r;
+            end resultado
         end loop
     end Cliente
 
     task body Servidor is
-
+        idCAux: integer;
+        sec: text;
+        R: text;
     begin
      loop 
-        accept resultado(s: in text, r: out text) do
-            r:= ResolverAnálisis(s);
-        end resultado;
+        Admin.siguiente(idCAux,sec);
+
+        R:= ResolverAnálisis
+
+        arrC[idCAux].resultado(R);       
      end loop 
     end Servidor
 
-
+    task body Admin is
+    begin
+        loop
+            accept solicitud(idC: in integer,s: in text) do
+                accept siguiente(idCliente: out integer,secuencia: out text) do 
+                    idCliente:= idC;
+                    secuencia:= s;
+                end siguiente;
+            end solicitud;
+        end loop
+    end Admin;
 begin
-
+    for i in 1 .. N loop
+        arrC[i].identificar(i);
+    end loop
 end IdentificaciomGenetica;
