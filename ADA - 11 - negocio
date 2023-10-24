@@ -20,25 +20,23 @@ Procedure Negocio is
   Task body  Cliente
     prioridad: text:= ...; 
     resultado : text;
-  begin 
-        SELECT 
-          when("Cliente es embarazada") =>
+  begin  
+        if (Cliente es embarazada") then 
             SELECT Empleado.atiendeEmbarazadas("datos",resultado); 
             ELSE
               null;  #se retira
-            END SELECT
-        OR 
-          loop 
-            when("Cliente es anciano") =>
+            END SELECT 
+        
+        else
+            if("Cliente es anciano") then
               SELECT    Empleado.atiendeAncianos("datos",resultado);
               OR DELAY (300)
                 null;
               END SELECT
-          end loop'
-        
-        ELSE 
-          Empleado.atienteRegulares("datos", resultado);
-        END SELECT
+            else
+                Empleado.atienteRegulares("datos", resultado);
+            end fi;
+        end fi
   end Cliente;
 
   task body Empleado is
