@@ -9,7 +9,6 @@ Procedure Complejo is
   task type Jugador;
 
   task type Cancha is
-    entry indicarID(ID: in integer);
     entry llegada;
     entry finalizarPartido;
   end Cancha;
@@ -47,9 +46,6 @@ Procedure Complejo is
   task body Cancha is
     id: integer;
   begin
-    accept identificarID(ID: in integer)do
-      id:=ID;
-    end identificarID;
 
     for i in 1 .. 10 loop
       accept llegada();
@@ -62,7 +58,5 @@ Procedure Complejo is
     end loop;
   end Cancha;
 begin
-      for i in 1 .. 8 loop 
-        Cancha.indicar(i);
-      end loop 
+  null;
 end Complejo;
