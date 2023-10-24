@@ -44,7 +44,6 @@ Procedure Complejo is
   end Encargado;
 
   task body Cancha is
-    id: integer;
   begin
 
     for i in 1 .. 10 loop
