@@ -1,12 +1,67 @@
-11.En un negocio hay un empleado para atender los pedidos de clientes de N clientes; algunos clientes son ancianos o embarazadas. El empleado atiende los pedidos de acuerdo a la
-siguiente prioridad: primero las embarazadas, luego los ancianos, y por último el resto. Cada cliente hace sólo un pedido de la siguiente manera: en el caso de las embarazadas, si no son
-atendidas inmediatamente se retiran; en el caso de los ancianos, esperan a lo sumo 5 minutos a ser atendidos, y si no se retira; cualquier otro cliente espera si o si hasta ser
-atendido. El empleado atiende a los clientes de acuerdo al orden de llegada, pero manteniendo las siguientes prioridades: primero las embarazadas, luego los ancianos y luego
-el resto. Nota: suponga que existe una función AtenderPedido() que simula que el empleado está atendiendo a un cliente.
+11.En un negocio hay un empleado para atender los pedidos de clientes de N clientes; algunos clientes son ancianos o embarazadas. El empleado atiende los pedidos 
+de acuerdo a la siguiente prioridad: primero las embarazadas, luego los ancianos, y por último el resto. Cada cliente hace sólo un pedido de la siguiente manera: 
+en el caso de las embarazadas, si no son atendidas inmediatamente se retiran; en el caso de los ancianos, esperan a lo sumo 5 minutos a ser atendidos, y si no se 
+retira; cualquier otro cliente espera si o si hasta ser atendido. El empleado atiende a los clientes de acuerdo al orden de llegada, pero manteniendo las siguientes 
+prioridades: primero las embarazadas, luego los ancianos y luego el resto. Nota: suponga que existe una función AtenderPedido() que simula que el empleado está 
+atendiendo a un cliente.
 
 Procedure Negocio is
+    
+  Task Empleado is 
+    Entry atiendeEmbarazadas(D: in text; R : out texto)
+    Entry atiendeAncianos(D: in text; R : out texto)
+    Entry atiende(D: in text; R : out texto)
+  end  Empleado 
 
+  Task Type Clientes ; 
+      
+  arrClientes: array(1..N) of Clientes ;
+  
+  Task body  Cliente
+    prioridad: text:= ...; 
+    resultado : text;
+  begin 
+        SELECT 
+          when("Cliente es embarazada") =>
+            SELECT Empleado.atiendeEmbarazadas("datos",resultado); 
+            ELSE
+              null;  #se retira
+            END SELECT
+        OR 
+          loop 
+            when("Cliente es anciano") =>
+              SELECT    Empleado.atiendeAncianos("datos",resultado);
+              OR DELAY (300)
+                null;
+              END SELECT
+          end loop'
+        
+        ELSE 
+          Empleado.atienteRegulares("datos", resultado);
+        END SELECT
+  end Cliente;
 
-begin
+  task body Empleado is
 
-end Negocio;
+  begin
+    loop
+      SELECT accept atiendeEmbarazadas(D: in text; R : out texto) do
+                R:= AtenderPedido(D);
+             end atiendeEmbarazadas;
+
+      OR  when(atiendeEmbaradas'count == 0) => accept atiendeAncianos(D: in text; R : out texto) do
+                                                  R:= AtenderPedido(D);
+                                               end atiendeAncianos;
+
+      OR  when(atiendeEmbaradas'count == 0 and atiendeAncianos'count == 0) => accept atiendeRegulares (D: in text; R : out texto) do
+                                                                                R:= AtenderPedido(D);
+                                                                              end atiendeRegulares;
+      
+      END SELECT
+    end loop
+  
+  end Empleado
+  
+  begin
+    null;
+  end Negocio;
