@@ -5,11 +5,14 @@ Nota: maximizar la concurrencia. Suponga que los servidores tienen una función 
 
 Procedure IdentificaciomGenetica is
 
-    task  typeServidor is 
-       entry resultado (s: in text, r: out text);
+    task type Servidor is 
+        entry siguiente(idP: in integer);
+        entry resultado (s: in text, r: out text);
     end Servidor;
 
     task type Cliente 
+
+    task type Admin;
 
     arrC: array(1 .. N) of Cliente;
     arrS: array(1 .. 8) of Servidor;
