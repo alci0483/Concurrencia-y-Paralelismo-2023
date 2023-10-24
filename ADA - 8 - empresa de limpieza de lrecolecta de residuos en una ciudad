@@ -50,7 +50,7 @@ procedure Recoleccion is
     end Persona;
 
     task body Empresa is
-        cantR : array(1..P) of integer;
+        cantR : array(1..P) of integer;     #se inicializan las posociones en 0
         total : integer := 0;
     begin
         loop
@@ -61,9 +61,9 @@ procedure Recoleccion is
                 total := total + 1;
             OR
                 when(total > 0) => accept Siguiente(idP : out integer) do
-                    idP := maximo(cantR);
-                    total := total - cantR(idP);
-                    cantR(idP) := 0;
+                    idP := maximo(cantR);    #devuelve la posicion/id de la persona que hizo mas reclamos actualmente
+                    total := total - cantR(idP);    #se actualiza el total de reclamos restando los reclamos que hizo la persona siguiente(que hizo mas reclamos)
+                    cantR(idP) := 0;    # inicializo en 0 reclamos a esa persona que va a ser atendido para que no haga lio en el metodo maximo(int)
                 End Siguiente;
             END SELECT
         end loop
