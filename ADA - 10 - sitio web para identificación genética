@@ -1,15 +1,39 @@
-10.Hay un sitio web para identificación genética que resuelve pedidos de N clientes. Cada cliente trabaja continuamente de la siguiente manera: genera la secuencia de ADN, la envía
-al sitio web para evaluar y espera el resultado; después de esto puede comenzar a generar la siguiente secuencia de ADN. Para resolver estos pedidos el sitio web cuenta con 5
-servidores idénticos que atienden los pedidos de acuerdo al orden de llegada (cada pedido es atendido por un único servidor). Nota: maximizar la concurrencia. Suponga que los
-servidores tienen una función ResolverAnálisis que recibe la secuencia de ADN y devuelve un entero con el resultado. 
+10.Hay un sitio web para identificación genética que resuelve pedidos de N clientes. Cada cliente trabaja continuamente de la siguiente manera: genera la secuencia 
+de ADN, la envía al sitio web para evaluar y espera el resultado; después de esto puede comenzar a generar la siguiente secuencia de ADN. Para resolver estos 
+pedidos el sitio web cuenta con 5 servidores idénticos que atienden los pedidos de acuerdo al orden de llegada (cada pedido es atendido por un único servidor). 
+Nota: maximizar la concurrencia. Suponga que los servidores tienen una función ResolverAnálisis que recibe la secuencia de ADN y devuelve un entero con el resultado.
 
 Procedure IdentificaciomGenetica is
 
-    task SitioWeb
+    task  typeServidor is 
+       entry resultado (s: in text, r: out text);
+    end Servidor;
 
-    task type Cliente
+    task type Cliente 
 
     arrC: array(1 .. N) of Cliente;
+    arrS: array(1 .. 8) of Servidor;
+
+    tas body Cliente is
+        secuenciaADN: text;
+        resultado: text
+    begin
+        loop
+            secuenciaADN:= generarSecuenciaAdn();
+            
+            Servidor.resultado (secuenciaADN, resultado);   
+        end loop
+    end Cliente
+
+    task body Servidor is
+
+    begin
+     loop 
+        accept resultado(s: in text, r: out text) do
+            r:= ResolverAnálisis(s);
+        end resultado;
+     end loop 
+    end Servidor
 
 
 begin
