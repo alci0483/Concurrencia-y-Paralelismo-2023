@@ -41,7 +41,7 @@ procedure Recoleccion is
             Empresa.Reclamo(nro);
 
             SELECT
-                accept Atendido(); End Atendido;
+                accept Atendido();
                 listo := true;
             OR DELAY(15*60)
                 null;
