@@ -6,7 +6,6 @@ Nota: todas las tareas deben terminar.
 Procedure EmpresaTurismo is
 
   task type Micro
-    entry identificarID(n: in integer);
     entry subir;
     entry finalizarViaje;
   end Micro;
@@ -25,13 +24,8 @@ Procedure EmpresaTurismo is
   end Persona;
 
   task body Micro is
-    id: integer;
     duracionViaje: integer:= ...;  #cada micro sabe masomenos lo que dura su viaje (entre 3 y 5 hs) en minutos
   begin
-    accept identificarID(n: in integer) do
-      id:=n;
-    end identificarID;
-
     for i in 1 .. 30 loop
       accept subir();
     end loop;
@@ -43,7 +37,5 @@ Procedure EmpresaTurismo is
     end loop;
   end Micro;
 begin
-  for i in 1 .. 5 loop
-    Micro.identificarID(i);
-  end loop
+  null
 end EmpresaTurismo;
