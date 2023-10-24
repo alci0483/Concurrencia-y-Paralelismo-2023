@@ -1,0 +1,12 @@
+11.En un negocio hay un empleado para atender los pedidos de clientes de N clientes; algunos clientes son ancianos o embarazadas. El empleado atiende los pedidos de acuerdo a la
+siguiente prioridad: primero las embarazadas, luego los ancianos, y por último el resto. Cada cliente hace sólo un pedido de la siguiente manera: en el caso de las embarazadas, si no son
+atendidas inmediatamente se retiran; en el caso de los ancianos, esperan a lo sumo 5 minutos a ser atendidos, y si no se retira; cualquier otro cliente espera si o si hasta ser
+atendido. El empleado atiende a los clientes de acuerdo al orden de llegada, pero manteniendo las siguientes prioridades: primero las embarazadas, luego los ancianos y luego
+el resto. Nota: suponga que existe una función AtenderPedido() que simula que el empleado está atendiendo a un cliente.
+
+Procedure Negocio is
+
+
+begin
+
+end Negocio;
