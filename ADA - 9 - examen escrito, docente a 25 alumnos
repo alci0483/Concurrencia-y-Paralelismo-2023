@@ -1,0 +1,53 @@
+9. En una clase hay un docente que les toma un examen escrito a 25 alumnos. El docente espera a que todos los alumnos hayan llegado para entregarles el enunciado. Cada alumno
+resuelve el examen, se lo entrega al docente y luego espera a que este le indique la nota. Nota: suponga que existe una función Resolver_Examen llamada por los alumnos para
+simular la resolución del examen, y otra Corregir_Examen llamada por el docente para simular la corrección de un examen.
+
+Procedure Clase is
+
+  task Docente is
+    entry llegada;
+    entry entregaEnunciado(e: out text);
+    entry resultado(e: in text, n: out integer);
+  end Docente;
+
+  task type Alumno
+
+  arrA: array(1..25) of Alumno
+
+  task body Docente is
+    enunciado: text:= ...;
+  begin
+    for i in 1 .. 25 loop
+      accept llegada;
+    end loop
+
+    for i in 1 .. 25 loop
+      accept entregaEnunciado(e: out integer) do
+        e:= enunciado;
+      end entregaEnunciado
+    end loop    
+
+    for i in 1 .. 25 loop
+      accept resultado(e: in text, n:out integer) do
+        n := Corregir_Examen(e);
+      end resultado
+    end loop
+    
+  end Docente;
+
+  task Alumno is
+    examen: text;
+    nota: integer;
+  begin
+    Docente.llegada;
+    
+    Docente.entregaEnunciado(examen);
+
+    Resolver_Examen(examen);
+
+    Docente.resultado(examen, nota)
+  end Alumno
+
+begin
+  null
+end Clase
