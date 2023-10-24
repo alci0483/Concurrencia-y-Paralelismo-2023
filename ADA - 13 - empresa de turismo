@@ -1,11 +1,49 @@
-13.En una empresa de turismo hay 5 micros que van a diferentes ciudades (cada micro tiene lugar para 30 pasajeros). Cada micro espera a que suban sus 30 pasajeros y luego realiza el
-viaje (el viaje dura un tiempo aleatorio entre 3 y 5 horas). Hay 150 personas que deben viajar en alguno de los micros (cada persona ya sabe a cuál micro debe subir); cuando una
-persona llega sube al micro correspondiente, y luego debe esperar a que el viaje finalice para terminar su ejecución. Nota: todas las tareas deben terminar.
+13.En una empresa de turismo hay 5 micros que van a diferentes ciudades (cada micro tiene lugar para 30 pasajeros). Cada micro espera a que suban sus 30 pasajeros 
+y luego realiza el viaje (el viaje dura un tiempo aleatorio entre 3 y 5 horas). Hay 150 personas que deben viajar en alguno de los micros (cada persona ya sabe a 
+cuál micro debe subir); cuando una persona llega sube al micro correspondiente, y luego debe esperar a que el viaje finalice para terminar su ejecución. 
+Nota: todas las tareas deben terminar.
 
 Procedure EmpresaTurismo is
 
+  task type Micro
+    entry identificarID(n: in integer);
+    entry subir;
+    entry finalizarViaje;
+  end Micro;
 
+  tak type Persona;
 
+  arrM:= array(1..5) of Micro;
+  arrP:= array(1..150) of Persona;
+
+  task body Persona is
+    nroMicro: integer:= ...;  #ya conoce el micro al cual subir
+  begin
+    arrM[nroMicro].subir();
+    arrM[nroMicro].finalizarViaje();
+    //se retira
+  end Persona;
+
+  task body Micro is
+    id: integer;
+    duracionViaje: integer:= ...;  #cada micro sabe masomenos lo que dura su viaje (entre 3 y 5 hs) en minutos
+  begin
+    accept identificarID(n: in integer) do
+      id:=n;
+    end identificarID;
+
+    for i in 1 .. 30 loop
+      accept subir();
+    end loop;
+
+    delay_minuto(duracionViaje);    #se realiza el viaje
+
+    for i in 1 .. 30 loop
+      accept finalizarViaje();
+    end loop;
+  end Micro;
 begin
-
+  for i in 1 .. 5 loop
+    Micro.identificarID(i);
+  end loop
 end EmpresaTurismo;
