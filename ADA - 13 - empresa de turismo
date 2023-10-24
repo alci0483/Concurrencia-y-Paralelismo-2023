@@ -1,0 +1,11 @@
+13.En una empresa de turismo hay 5 micros que van a diferentes ciudades (cada micro tiene lugar para 30 pasajeros). Cada micro espera a que suban sus 30 pasajeros y luego realiza el
+viaje (el viaje dura un tiempo aleatorio entre 3 y 5 horas). Hay 150 personas que deben viajar en alguno de los micros (cada persona ya sabe a cuál micro debe subir); cuando una
+persona llega sube al micro correspondiente, y luego debe esperar a que el viaje finalice para terminar su ejecución. Nota: todas las tareas deben terminar.
+
+Procedure EmpresaTurismo is
+
+
+
+begin
+
+end EmpresaTurismo;
