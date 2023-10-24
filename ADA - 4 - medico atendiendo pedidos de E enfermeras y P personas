@@ -65,7 +65,7 @@ procedure Clinica is
             SELECT
                 accept AtiendePaciente();
             OR
-                when(AtiendePaciente.count == 0) => accept AtiendeEnfermera();
+                when(AtiendePaciente'count == 0) => accept AtiendeEnfermera();
             ELSE    
                 accept ObtenerNota(N: in text) do
                     nota:=N;
