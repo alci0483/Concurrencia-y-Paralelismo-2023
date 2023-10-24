@@ -1,12 +1,68 @@
-12.Simular el funcionamiento de un Complejo de Canchas de Futbol 5 que posee 8 canchas y donde hay UN encargado. Al complejo acuden 80 jugadores divididos en 8 grupos (cada
-grupo tienen las 10 personas que jugarán en una cancha), cada jugador ya conoce a qué grupo pertenece. Cuando un jugador llega le indica al encargado el grupo al que pertenece
-para que este le indique el número de cancha a la cual debe ir, y se dirige a ella. Cuando los 10 integrantes de un grupo han llegado a la cancha que les corresponde, comienzan a jugar
-el partido que dura 50 minutos; y luego se retiran. El encargado asigna el número de cancha de acuerdo al orden en que llega el primer jugador de cada grupo. Nota: cuando el
-encargado ya atendió a los 80 jugadores debe terminar su ejecución. 
+12.Simular el funcionamiento de un Complejo de Canchas de Futbol 5 que posee 8 canchas y donde hay UN encargado. Al complejo acuden 80 jugadores divididos en 8 
+grupos (cada grupo tienen las 10 personas que jugarán en una cancha), cada jugador ya conoce a qué grupo pertenece. Cuando un jugador llega le indica al encargado 
+el grupo al que pertenece para que este le indique el número de cancha a la cual debe ir, y se dirige a ella. Cuando los 10 integrantes de un grupo han llegado a 
+la cancha que les corresponde, comienzan a jugar el partido que dura 50 minutos; y luego se retiran. El encargado asigna el número de cancha de acuerdo al orden 
+en que llega el primer jugador de cada grupo. Nota: cuando el encargado ya atendió a los 80 jugadores debe terminar su ejecución. 
 
 Procedure Complejo is
+  
+  task type Jugador;
 
+  task type Cancha is
+    entry indicarID(ID: in integer);
+    entry llegada;
+    entry finalizarPartido;
+  end Cancha;
 
+  task Encargado is
+    entry indicaCancha(nG: in integer, nC: out integer);
+  end Encargad;
+
+  arrJ: arrJ(1 .. 80) of Jugador;
+  arrJ: arrC(1 .. 8) of Cancha;
+
+  task body Jugador is
+    nEquipo: integer :=...; #ya conoce su numero de equipo
+  begin
+    Encargado.IndicarCancha(nEquipo,nCancha)
+    arrC[nCancha].llegada;
+    arrC[nCancha].finalizarPartido;  
+  end Jugador;
+
+  task body Encargado is
+    arrNC: array(1..8) of integer := ([8] -1);  #supongo que cada posicion esta inicializada en -1
+    llegan: integer := 1;
+  begin
+    for i in 1 .. 80 loop 
+      accept IndicarCancha(nG: in integer, nC: out integer) do
+        if(arrNC[nG] <> -1) then
+          arrNC[nG]:=llegan;
+          llegan:= llegan + 1;
+        end if
+        nC:= arrNC[nG];
+      end IndicarCancha
+    end loop;
+  end Encargado;
+
+  task body Cancha is
+    id: integer;
+  begin
+    accept identificarID(ID: in integer)do
+      id:=ID;
+    end identificarID;
+
+    for i in 1 .. 10 loop
+      accept llegada();
+    end loop;
+
+    delay_minutos(50);   #se juega el partido
+    
+    for i in 1 .. 10 loop
+      accept finalizarPartido();
+    end loop;
+  end Cancha;
 begin
-
+      for i in 1 .. 8 loop 
+        Cancha.indicar(i);
+      end loop 
 end Complejo;
