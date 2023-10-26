@@ -3,3 +3,29 @@ turno i). Cada paciente ya conoce su turno al comenzar (valor entero entre 0 y 1
 atendido y luego espera hasta que el médico lo termine de atender. Nota: los únicos procesos que se pueden usar son los que representen a los pacientes y al médico; se debe evitar hacer
 Busy Waiting.
 
+chan llegadaPaciente();
+chan siguiente[15]();
+
+process Paciente[id:0..14]{  //tomo como que el turno corresponde a su id
+
+  send llegadaPaciente();
+  receive siguiente[id]()
+  
+  //Estoy siendo atendido
+
+  receive siguiente[id]()
+}
+
+process Medico{
+
+  for i in 0 ..14 {
+    receive llegadaPaciente();
+
+    send siguiente[i]();
+
+    //Atiendo al i-esimo paciente
+
+    send siguiente[i]();
+  }
+
+}
