@@ -3,3 +3,48 @@ envían un reporte a la empresa para que lo corrija (no tienen que esperar a que
 reclamos pendientes trabajan durante una hora en otros programas. Nota: los procesos no deben terminar (trabajan en un loop infinito); suponga que hay una función ResolverError que
 simula que un programador está resolviendo un reporte de un cliente, y otra Programar que simula que está trabajando en otro programa.
 
+chan enviaReporteCliente(text);
+chan solicitudReporteProgramador(id);
+chan enviaReporteEmpresa[3](reporte)
+
+process Cliente[id: 0..N-1] {
+  text reporte; 
+  
+  while (true) {
+    //trabaja  
+    encortreError(reporte);
+    send enviaReporteCliente(reporte);
+  }
+
+}
+
+process Empresa {  //administradora de los programadores
+  text reporte;
+  int idProgramador;
+
+  while (true) {
+    receive enviaReporteCliente(reporte);
+    receive solicitudReporteProgramador(idProgramador);
+    enviaReporteEmpresa[idProgramador](reporte);
+  }
+
+}
+
+process Programador[id: 0..2] {
+  text reporte;
+  
+  send solicitudReporteProgramador(id);
+  while (true) {
+    if(not empty(enviaReporteEmpresa[id])){
+      receive enviaReporteEmpresa[id](reporte)
+      ResolverError(reporte);   
+    }else{
+      Programar();
+      delay(3600);  
+    }
+
+    send solicitudReporteProgramador(id);
+  }
+
+}
+
