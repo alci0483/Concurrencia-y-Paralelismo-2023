@@ -10,27 +10,27 @@
     
     send  Llegue ( id ); 
     
-    receive Turno [id] (emp); // esta persona por su canal privado espera recibir 
+    receive Turno [id] (emp); 
     
-    receive TerminoAtenderme[emp] ();// espero a recibir  por el canal privado 
+    receive TerminoAtenderme[emp] ();
        
-    send Salgo [emp]();//aviso por el canal privado  del empleado  que me atendio 
+    send Salgo [emp]();
   }
 
   Process Empleado [ id: 0 ..2 ] {       
     int idP
          
     while ( true ) {
-      receive LLegue( idP);  // el empleado espera a recibir por el canal Llegue el idP de
+      receive LLegue( idP);  
              
-      send Turno[idP]( id); // envia por el canal privado de la persona el id del empleado  
+      send Turno[idP]( id); 
       
       //que le va atender 
       //...      
       //el empleado esta atendiendo a la persona idP 
       
-      send TerminoAtender[id] (); // el empleado por su canal privado   notifico a la persona  que termine de atenderle por que la persona ya sabe que empleado le atendio 
+      send TerminoAtender[id] (); 
       
-      receive Salgo[id] (); // espero que me notifiquen que la persona que termine de atender salio  del banco 
+      receive Salgo[id] (); 
     } 
   }
