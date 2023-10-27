@@ -1,4 +1,4 @@
-13.En un estadio de fútbol hay una máquina expendedora de gaseosas que debe ser usada por E Espectadores de acuerdo al orden de llegada. Cuando el espectador accede a la máquina, 
+13. En un estadio de fútbol hay una máquina expendedora de gaseosas que debe ser usada por E Espectadores de acuerdo al orden de llegada. Cuando el espectador accede a la máquina, 
 la usa y luego se retira para dejar al siguiente. Nota: cada Espectador usa una sóla vez la máquina.
 
 Process Espectador[id: 0..E-1] {
@@ -10,9 +10,7 @@ Process Espectador[id: 0..E-1] {
     Admin!retiro();
 }
 
-
-
-Process Expendedora {
+Process Admin {
     Cola C;
     int idPersona;
     bool libre = true;
