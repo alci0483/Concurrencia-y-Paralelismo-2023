@@ -2,3 +2,62 @@
 empleado les indica a que cabina ir, la usan y luego se dirigen al empleado para pagarle. El empleado atiende a los clientes en el orden en que hacen los pedidos, pero siempre dando
 prioridad a los que terminaron de usar la cabina. Nota: maximizar la concurrencia; suponga que hay una función Cobrar() llamada por el empleado que simula que el empleado le cobra
 al cliente.
+
+chan aviso();   //el cliente avisa de que si llego al locutorio o que va a ir a pagar al empleado
+chan llegadaCliente(int);
+chan turnoCliente[N]();      //estos canales privados se utilizan para saber cuando es el turno para que un cliente use y se retire una cabine, 
+                             //cuando le toque  pagar y cuando se retira del locutorio
+chan enviarClienteCabina[10](int);
+chan pagarEmpleado(int);
+chan cabinaLibre(int);
+
+process Cliente[id: 0..N-1] {
+  send aviso();    //aviso que llegue
+  send llegadaCliente(id);
+  
+  receive turnoCliente[id]();  
+  //le toca usar la cabina
+  send turnoCliente[id]();  
+
+  send aviso();    //aviso que quiero pagar
+  send pagarEmpleado(id);
+
+  receive turnoCliente[id]();  
+  //le toca pagar al empleado
+  receive turnoCliente[id](); 
+  //se retira
+}
+
+process Empleado {
+  int idCliente, idCabina;
+
+  for i in 0 .. 2*(N-1) {  //multiplico por dos la cantidad de iteraciones, por que los N clientes avisan de dos tipos de acciones (llegar o pagar)
+    receive aviso();
+
+    if (not empty(llegadaCliente)) -> receive llegadaCliente(idCliente);
+                                      receive cabinaLible(idCabina);
+                                      send enviarClienteCabina[idCabina](idCliente);
+
+    [] (not empty(pagarEmpleado)) ->  receive pagarEmpleado(idCliente);
+                                      send turnoCliente[idCliente]();
+                                      //le cobro al cliente
+                                      send turnoCliente[idCliente]();
+    fi
+  }
+
+}
+
+process CabinaTelefonica[id:0..9] {
+  int idCliente;
+
+  send cabinaLibre(id);
+  while(true) {
+    receive chan enviarClienteCabina[10](idCliente);
+
+    send tunoCliente[idCliente]();
+    //usa la cabina
+    receive tunoCliente[idCliente]();
+
+    send cabinaLibre(id);
+  }
+}
