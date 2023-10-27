@@ -25,9 +25,9 @@ Process Admin {
 
     [] ((libre)and(not empty(cN))and(empty(cU))); Persona[*]?llegada(idP) -> libre = false; Persona[idP]!usar(); 
 
-    [] (not libre); Persona[*]?llegadaUrgente(idP) -> else push(cU, idP);
+    [] (not libre); Persona[*]?llegadaUrgente(idP) -> push(cU, idP);
 
-    [] (not libre); Persona[*]?llegada(idP) -> else push(cN, idP);
+    [] (not libre); Persona[*]?llegada(idP) ->  push(cN, idP);
 
     [] ((empty(cU))and((empty(cN)))); Persona[*]?retiro() -> libre = true;
 
