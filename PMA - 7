@@ -23,28 +23,29 @@ process Empresa {  //administradora de los programadores
   int idProgramador;
 
   while (true) {
-    receive enviaReporteCliente(reporte);
     receive solicitudReporteProgramador(idProgramador);
-    enviaReporteEmpresa[idProgramador](reporte);
-  }
-
+    
+    if (not empty(enviaReporteCliente))
+      receive enviaReporteCliente(reporte);
+    else
+      reporte='Vacio'
+    
+    send enviaReporteEmpresa[idProgramador](reporte);
 }
 
 process Programador[id: 0..2] {
   text reporte;
   
-  send solicitudReporteProgramador(id);
   while (true) {
-    if(not empty(enviaReporteEmpresa[id])){
+      send solicitudReporteProgramador(id); 
       receive enviaReporteEmpresa[id](reporte)
-      ResolverError(reporte);   
-    }else{
-      Programar();
-      delay(3600);  
+      if(reporte == 'Vacio'){
+        Programar();
+        delay(3600); 
+      }else{
+        ResolverError(reporte);     
+      }
     }
-
-    send solicitudReporteProgramador(id);
-  }
 
 }
 
