@@ -31,12 +31,15 @@ process Cliente[id: 0..N-1] {
 process Empleado {
   int idCliente, idCabina;
 
-  for i in 0 .. 2*(N-1) {  //multiplico por dos la cantidad de iteraciones, por que los N clientes avisan de dos tipos de acciones (llegar o pagar)
+  for i in 0 .. 2*(N) - 1 {  //multiplico por dos la cantidad de iteraciones, por que los N clientes avisan de dos tipos de acciones (llegar o pagar)
     receive aviso();
 
-    if (not empty(llegadaCliente)) -> receive llegadaCliente(idCliente);
-                                      receive cabinaLible(idCabina);
-                                      send enviarClienteCabina[idCabina](idCliente);
+    if (not empty(cabinaLibre)) ->    receive cabinaLibre(idCabina);
+                                       i_= idCabina
+                                  
+     [ ] not empty ( llegue )  ->   receive llegue ( idP);
+                
+                                   send enviarClienteCabina[idP](i_);
 
     [] (not empty(pagarEmpleado)) ->  receive pagarEmpleado(idCliente);
                                       send turnoCliente[idCliente]();
@@ -50,14 +53,14 @@ process Empleado {
 process CabinaTelefonica[id:0..9] {
   int idCliente;
 
-  send cabinaLibre(id);
+  
   while(true) {
-    receive chan enviarClienteCabina[10](idCliente);
+    send cabinaLibre(id);
+    receive chan enviarClienteCabina[id](idCliente);
 
     send tunoCliente[idCliente]();
     //usa la cabina
     receive tunoCliente[idCliente]();
 
-    send cabinaLibre(id);
   }
 }
